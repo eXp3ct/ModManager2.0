@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Expect.ModManager.Infrastructure
 {
@@ -13,8 +8,6 @@ namespace Expect.ModManager.Infrastructure
 		public static void AddInfrastructure(this IServiceCollection services)
 		{
 			services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
-
-
 		}
 	}
 }

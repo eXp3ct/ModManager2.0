@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Expect.ModManager.CurseClient\Expect.ModManager.CurseClient.csproj" />
+    <ProjectReference Include="..\Expect.ModManager.CurseClient\Expect.ModManager.CurseApiClient.csproj" />
     <ProjectReference Include="..\Expect.ModManager.Domain\Expect.ModManager.Domain.csproj" />
   </ItemGroup>
 

@@ -1,21 +1,20 @@
-﻿using Expect.ModManager.CurseClient.Common.Interfaces;
-using Expect.ModManager.Domain.Configurations;
+﻿using Expect.ModManager.Domain.Configurations;
+using Expect.ModManager.Net.Common.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 
-namespace Expect.ModManager.CurseClient.Common
+namespace Expect.ModManager.Net.Common.Clients
 {
-	public class Client : HttpClient, IClient
+	public class CurseClient : HttpClient, IClient
 	{
 		private readonly IOptions<CurseClientOptions> _options;
-		public Client(IOptions<CurseClientOptions> options)
+
+		public CurseClient(IOptions<CurseClientOptions> options)
 		{
 			_options = options;
-
-			ConfigureClient();
 		}
 
-		private void ConfigureClient()
+		public void ApplyAuth()
 		{
 			DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			DefaultRequestHeaders.Add("x-api-key", _options.Value.ApiKey);

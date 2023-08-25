@@ -1,19 +1,18 @@
-﻿using Expect.ModManager.CurseClient.Common;
+﻿using Expect.ModManager.CurseApiClient.Fetching;
+using Expect.ModManager.CurseApiClient.Fetching.Interfaces;
+using Expect.ModManager.CurseApiClient.Urls;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Expect.ModManager.CurseClient
+namespace Expect.ModManager.CurseApiClient
 {
 	public static class DependencyInjection
 	{
 		public static void AddCurseClient(this IServiceCollection services)
 		{
-			services.AddSingleton<Client>();
+			services.AddSingleton<IGetEndpoint, CurseUris>();
+			services.AddScoped<IGetModsResponse, GetModsResponse>();
+			services.AddScoped<IGetModFilesResponse, GetModFilesResponse>();
+			services.AddSingleton<IGetFeaturesResponse, GetFeaturesResponse>();
 		}
 	}
 }
