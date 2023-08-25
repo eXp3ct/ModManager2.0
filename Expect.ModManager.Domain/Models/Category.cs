@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Expect.ModManager.Domain.Interfaces;
 
 namespace Expect.ModManager.Domain.Models
 {
-	public class Category
+	public class Category : IModel
 	{
 		public int Id { get; set; }
 		public int GameId { get; set; }
@@ -20,5 +15,10 @@ namespace Expect.ModManager.Domain.Models
 		public int? ClassId { get; set; }
 		public int? ParentCategoryId { get; set; }
 		public int? DisplayIndex { get; set; }
+	}
+
+	public class CategoryData
+	{
+		public IEnumerable<Category> Data { get; set;}
 	}
 }

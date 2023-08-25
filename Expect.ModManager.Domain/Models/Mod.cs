@@ -1,4 +1,5 @@
 ﻿using Expect.ModManager.Domain.Enums;
+using Expect.ModManager.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Expect.ModManager.Domain.Models
 {
-	public class Mod
+	public class Mod : IMod
 	{
 		public int Id { get; set; }
 		public int GameId { get; set; }
@@ -24,11 +25,22 @@ namespace Expect.ModManager.Domain.Models
 		public List<ModAuthor> Authors { get; set; }
 		public ModAsset Logo { get; set; }
 		public List<ModAsset> ScreenShots { get; set; }
+		public int MainFileId { get; set; }
 		public DateTime DateCreated { get; set; }
 		public DateTime DateModified { get; set; }
 		public DateTime DateReleased { get; set; }
 		public int GamePopularityRank { get; set; }
 		public bool IsAvaliable { get; set; }
 		public int ThumsbUpCount { get; set; }
+	}
+
+	public class ModData
+	{
+		public Mod Data { get; set; }
+	}
+
+	public class ModsData
+	{
+		public IEnumerable<Mod> Data { get; set; }
 	}
 }

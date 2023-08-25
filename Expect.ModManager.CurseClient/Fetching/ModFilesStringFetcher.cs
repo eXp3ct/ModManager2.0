@@ -15,18 +15,18 @@ using System.Threading.Tasks;
 
 namespace Expect.ModManager.CurseApiClient.Fetching
 {
-	public class GetModFilesResponse : IGetModFilesResponse
+	public class ModFilesStringFetcher : IFetchModFileString
 	{
 		private readonly HttpClient<CurseClient> _client;
 		private readonly IGetEndpoint _endpoint;
 
-		public GetModFilesResponse(HttpClient<CurseClient> client, IGetEndpoint endpoint)
+		public ModFilesStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint)
 		{
 			_client = client;
 			_endpoint = endpoint;
 		}
 
-		public async Task<string> GetFiles(IEnumerable<int> fileIds)
+		public async Task<string> GetList(IEnumerable<int> fileIds)
 		{
 			var url = _endpoint.GetEndpoint(RequestType.GetFiles);
 			var requestBody = JsonConvert.SerializeObject(new { fileIds });
@@ -50,7 +50,7 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 			return await response.TryReturnString();
 		}
 
-		public async Task<string> GetModFileDownloadUrl(int modId, int fileId)
+		public async Task<string> GetDownloadUrl(int modId, int fileId)
 		{
 			var url = _endpoint.GetEndpoint(RequestType.GetModFileDownloadUrl, modId, fileId);
 

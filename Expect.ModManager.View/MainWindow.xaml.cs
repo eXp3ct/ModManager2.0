@@ -1,4 +1,7 @@
-﻿using Expect.ModManager.Infrastructure.Queries;
+﻿using Expect.ModManager.Domain.ViewModels;
+using Expect.ModManager.Infrastructure.Queries;
+using Expect.ModManager.View.Pages;
+using Expect.ModManager.View.Pages.Factories;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -23,22 +26,19 @@ namespace Expect.ModManager.View
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly IMediator _mediator;
+		private readonly IPageFactory<DataPage> _pageFactory;
+		private readonly ViewState _viewState;
 
-		public MainWindow(IMediator mediator)
+		public MainWindow(IPageFactory<DataPage> pageFactory, ViewState viewState)
 		{
 			InitializeComponent();
-			_mediator = mediator;
-
-			NewMethod();
+			_pageFactory = pageFactory;
+			_viewState = viewState;
 		}
 
-		private async Task NewMethod()
+		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			var query = new SearchModsQuery();
-
-			var res = await _mediator.Send(query);
+			MainFrame.Content = _pageFactory.Create();
 		}
-
 	}
 }

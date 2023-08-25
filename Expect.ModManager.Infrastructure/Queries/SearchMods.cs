@@ -1,29 +1,43 @@
-﻿using Expect.ModManager.CurseApiClient.Fetching.Interfaces;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Expect.ModManager.CurseApiClient.Deserialization.Interfaces;
 using Expect.ModManager.Domain.Models;
+using Expect.ModManager.Domain.ViewModels;
+using Expect.ModManager.Domain.ViewModels.Interfaces;
 using MediatR;
+using System.Collections.ObjectModel;
 
 namespace Expect.ModManager.Infrastructure.Queries
 {
-	public class SearchModsQuery : IRequest<IEnumerable<Mod>>
+	public class SearchModsQuery : IRequest<IEnumerable<IViewModel>>
 	{
+		public ViewState ViewState { get; set; }
+
+		public SearchModsQuery(ViewState viewState)
+		{
+			ViewState = viewState;
+		}
 	}
 
-	public class SearchModsQueryHandler : IRequestHandler<SearchModsQuery, IEnumerable<Mod>>
+	public class SearchModsQueryHandler : IRequestHandler<SearchModsQuery, IEnumerable<IViewModel>>
 	{
-		private readonly IGetFeaturesResponse _featuresResponse;
+		private readonly IModDeserializer _modDeserializer;
+		private readonly IMapper _mapper;
 
-		public SearchModsQueryHandler(IGetFeaturesResponse featuresResponse)
+		public SearchModsQueryHandler(IModDeserializer modDeserializer, IMapper mapper)
 		{
-			_featuresResponse = featuresResponse;
+			_modDeserializer = modDeserializer;
+			_mapper = mapper;
 		}
 
-		public async Task<IEnumerable<Mod>> Handle(SearchModsQuery request, CancellationToken cancellationToken)
+		public async Task<IEnumerable<IViewModel>> Handle(SearchModsQuery request, CancellationToken cancellationToken)
 		{
-			var features = await _featuresResponse.GetMinecraftVersions(true);
+			var mods = await _modDeserializer
+				.SearchMods(request.ViewState);
 
-			features.Any();
-
-			return new List<Mod>();
+			return mods
+				.AsQueryable()
+				.ProjectTo<ModViewModel>(_mapper.ConfigurationProvider);
 		}
 	}
 }

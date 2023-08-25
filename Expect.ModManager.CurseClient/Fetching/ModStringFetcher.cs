@@ -10,12 +10,12 @@ using System.Text;
 
 namespace Expect.ModManager.CurseApiClient.Fetching
 {
-	public class GetModsResponse : IGetModsResponse
+	public class ModStringFetcher : IFetchModString
 	{
 		private readonly HttpClient<CurseClient> _client;
 		private readonly IGetEndpoint _endpoint;
 
-		public GetModsResponse(HttpClient<CurseClient> client, IGetEndpoint endpoint)
+		public ModStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint)
 		{
 			_client = client;
 			_endpoint = endpoint;
@@ -35,7 +35,7 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 			return await response.TryReturnString();
 		}
 
-		public async Task<string> GetMods(IEnumerable<int> modIds)
+		public async Task<string> GetList(IEnumerable<int> modIds)
 		{
 			var url = _endpoint.GetEndpoint(RequestType.GetMods);
 			var requestBody = JsonConvert.SerializeObject(new { modIds });

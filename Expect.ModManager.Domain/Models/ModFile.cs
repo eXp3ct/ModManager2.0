@@ -1,4 +1,5 @@
 ﻿using Expect.ModManager.Domain.Enums;
+using Expect.ModManager.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Expect.ModManager.Domain.Models
 {
-	public class ModFile
+	public class ModFile : IModFile
 	{
 		public int Id { get; set; }
 		public int GameId { get; set; }
@@ -24,5 +25,15 @@ namespace Expect.ModManager.Domain.Models
 		public string DownloadUrl { get; set; }
 		public List<string> GameVersions { get; set; }
 		public List<ModFileDependency> Dependencies { get; set; }
+	}
+
+	public class ModFileData
+	{
+		public ModFile Data { get; set; }
+	}
+
+	public class ModFilesData
+	{
+		public IEnumerable<ModFile> Data { get; set; }
 	}
 }

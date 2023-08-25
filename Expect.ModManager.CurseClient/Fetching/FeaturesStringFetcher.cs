@@ -4,21 +4,15 @@ using Expect.ModManager.CurseApiClient.Urls;
 using Expect.ModManager.CurseApiClient.Urls.Enums;
 using Expect.ModManager.Net.Common;
 using Expect.ModManager.Net.Common.Clients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Expect.ModManager.CurseApiClient.Fetching
 {
-	public class GetFeaturesResponse : IGetFeaturesResponse
+	public class FeaturesStringFetcher : IFetchFeaturesString
 	{
 		private readonly HttpClient<CurseClient> _client;
 		private readonly IGetEndpoint _endpoint;
 
-		public GetFeaturesResponse(HttpClient<CurseClient> client, IGetEndpoint endpoint)
+		public FeaturesStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint)
 		{
 			_client = client;
 			_endpoint = endpoint;
