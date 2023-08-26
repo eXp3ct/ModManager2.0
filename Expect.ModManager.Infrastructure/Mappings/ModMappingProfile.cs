@@ -16,8 +16,8 @@ namespace Expect.ModManager.Infrastructure.Mappings
             CreateMap<Mod, ModViewModel>()
                 .ForMember(vm => vm.Author, 
                     opt => opt.MapFrom(mod => mod.Authors.FirstOrDefault()!.Name))
-                .ForMember(vm => vm.Link, 
-                    opt => opt.MapFrom(mod => new Uri(mod.Links.WebSiteUrl)));
+                .ForMember(vm => vm.FullMod, 
+                    opt => opt.MapFrom(mod => mod));
         }
     }
 }

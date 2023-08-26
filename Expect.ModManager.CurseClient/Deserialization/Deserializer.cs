@@ -84,6 +84,15 @@ namespace Expect.ModManager.CurseApiClient.Deserialization
 
 			return data!.Data;
 		}
+
+		public async Task<IEnumerable<ModFile>> GetModFiles(int modId, string gameVersion = null, ModLoaderType modLoaderType = ModLoaderType.Any, int index = 0, int pageSize = 0)
+		{
+			var json = await _modFileString.GetModFiles(modId, gameVersion, modLoaderType, index, pageSize);
+
+			var data = JsonConvert.DeserializeObject<ModFilesData>(json);
+
+			return data!.Data;
+		}
 	}
 
 	public class FeaturesDeserializer : IFeaturesDeserizlier

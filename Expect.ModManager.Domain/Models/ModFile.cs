@@ -13,7 +13,7 @@ namespace Expect.ModManager.Domain.Models
 		public int Id { get; set; }
 		public int GameId { get; set; }
 		public int ModId { get; set; }
-		public bool IsAvaliable { get; set; }
+		public bool IsAvailable { get; set; }
 		public string DisplayName { get; set; }
 		public string FileName { get; set; }
 		public ModFileReleaseType ReleaseType { get; set; }

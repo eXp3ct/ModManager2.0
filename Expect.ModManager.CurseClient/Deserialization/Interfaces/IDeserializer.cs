@@ -15,6 +15,12 @@ namespace Expect.ModManager.CurseApiClient.Deserialization.Interfaces
 	{
 		public Task<string> GetDownloadUrl(int modId, int fileId);
 		public Task<ModFile> GetModFile(int modId, int fileId);
+		public Task<IEnumerable<ModFile>> GetModFiles(int modId,
+			string gameVersion = null,
+			ModLoaderType modLoaderType = ModLoaderType.Any, int index = 0, int pageSize = 0);
+
+		public Task<IEnumerable<ModFile>> GetModFiles(int modId, ViewState state, int index = 0, int pageSize = 0) =>
+			GetModFiles(modId, state.GameVersion, state.ModLoaderType, index, pageSize);
 	}
 
 	public interface IModDeserializer : IBaseDeserializer<Mod>

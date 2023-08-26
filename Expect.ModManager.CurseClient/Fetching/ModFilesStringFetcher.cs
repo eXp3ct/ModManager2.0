@@ -60,7 +60,7 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 		}
 
 		public async Task<string> GetModFiles(int modId, 
-			string gameVersion = null, 
+			string gameVersion = "", 
 			ModLoaderType modLoaderType = ModLoaderType.Any, int index = 0, int pageSize = 0)
 		{
 			var queryParams = new Dictionary<string, string>
@@ -76,6 +76,7 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 			if (queryParams.Any())
 			{
 				url = $"{_endpoint.GetEndpoint(RequestType.GetModFiles, modId)}?{string.Join('&', queryParams
+					.Where(pair => !string.IsNullOrEmpty(pair.Value))
 					.Select(q => $"{q.Key}={q.Value}"))}";
 			}
 

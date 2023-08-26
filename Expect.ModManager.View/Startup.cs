@@ -30,7 +30,8 @@ namespace Expect.ModManager.View
 			{
 				GameId = 432,
 				ClassId = 6,
-				ModLoaderType = ModLoaderType.Any,
+				ModLoaderType = ModLoaderType.Forge,
+				GameVersion = "1.12.2",
 				Index = 0,
 				PageSize = 10,
 				SortOrder = "desc",

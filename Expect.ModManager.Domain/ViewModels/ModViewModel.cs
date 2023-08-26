@@ -1,4 +1,8 @@
-﻿using Expect.ModManager.Domain.ViewModels.Interfaces;
+﻿using Expect.ModManager.Domain.Models;
+using Expect.ModManager.Domain.ViewModels.Interfaces;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Expect.ModManager.Domain.ViewModels
 {
@@ -7,13 +11,13 @@ namespace Expect.ModManager.Domain.ViewModels
 		public int Id { get; set; }
 		public string Name { get; set; }
 
-		public Uri Link { get; set; }
-
 		public string Summary { get; set; }
 		public string Author { get; set; }
 
 		public DateTime DateCreated { get; set; }
 
 		public DateTime DateModified { get; set; }
+
+		public virtual Mod FullMod { get; set; }
 	}
 }

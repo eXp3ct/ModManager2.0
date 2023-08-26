@@ -33,6 +33,7 @@ namespace Expect.ModManager.View
 	public partial class MainWindow : Window
 	{
 		private const int PaginationLimit = 10000;
+
 		private readonly IPageFactory<DataPage> _pageFactory;
 		private readonly ViewState _viewState;
 		private readonly IMediator _meditaor;
@@ -52,6 +53,8 @@ namespace Expect.ModManager.View
 			MainFrame.Content = _pageFactory.Create();
 
 			await AddFeatures(_viewState);
+
+			SortOrderCheckBox.IsChecked = true;
 		}
 
 		private async Task AddFeatures(ViewState state)

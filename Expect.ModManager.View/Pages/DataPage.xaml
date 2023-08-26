@@ -3,15 +3,35 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Expect.ModManager.View.Pages"
+      xmlns:local="clr-namespace:Expect.ModManager.View.Pages" xmlns:usercontrols="clr-namespace:Expect.ModManager.View.UserControls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DataPage">
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        
         <DataGrid x:Name="DataGrid" SelectionMode="Single" CanUserAddRows="False" CanUserDeleteRows="False"
                   CanUserReorderColumns="False" CanUserSortColumns="False" GridLinesVisibility="All" HorizontalContentAlignment="Left" HeadersVisibility="Column"
-                  VerticalContentAlignment="Center" IsReadOnly="True" MaxColumnWidth="300" >
+                  VerticalContentAlignment="Center" 
+                  IsReadOnly="True" MaxColumnWidth="300"
+                  AutoGenerateColumns="False"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name"
+                                    Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Summary"
+                                    Binding="{Binding Summary}"/>
+                <DataGridTextColumn Header="Author"
+                                    Binding="{Binding Author}"/>
+                <DataGridTextColumn Header="Date Created"
+                                    Binding="{Binding DateCreated}"/>
+                <DataGridTextColumn Header="Date Updated"
+                                    Binding="{Binding DateModified}"/>
+            </DataGrid.Columns>
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="FontSize" Value="16" />
@@ -28,5 +48,11 @@
                 </Style>
             </DataGrid.CellStyle>
         </DataGrid>
+
+        <usercontrols:ModDescription Grid.Column="1" 
+                                     x:Name="ModDescription"
+                                     AdditionalInfoRequired="ModDescription_DepenencyRequired"
+                                     Mod="{Binding ElementName=DataGrid, Path=SelectedItem.FullMod}"/>
+
     </Grid>
 </Page>

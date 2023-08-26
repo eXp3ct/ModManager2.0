@@ -30,7 +30,7 @@ namespace Expect.ModManager.Domain.Models
 		public DateTime DateModified { get; set; }
 		public DateTime DateReleased { get; set; }
 		public int GamePopularityRank { get; set; }
-		public bool IsAvaliable { get; set; }
+		public bool IsAvailable { get; set; }
 		public int ThumsbUpCount { get; set; }
 	}
 

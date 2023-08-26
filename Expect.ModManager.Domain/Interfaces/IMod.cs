@@ -8,6 +8,6 @@ namespace Expect.ModManager.Domain.Interfaces
 {
 	public interface IMod : IModel
 	{
-		
+		public string Name { get; set; }
 	}
 }

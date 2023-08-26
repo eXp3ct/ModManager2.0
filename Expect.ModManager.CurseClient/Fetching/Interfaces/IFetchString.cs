@@ -30,6 +30,9 @@ namespace Expect.ModManager.CurseApiClient.Fetching.Interfaces
 	{
 		public Task<string> GetDownloadUrl(int modId, int fileId);
 		public Task<string> GetModFile(int modId, int fileId);
+		public Task<string> GetModFiles(int modId,
+			string gameVersion = null,
+			ModLoaderType modLoaderType = ModLoaderType.Any, int index = 0, int pageSize = 0);
 	}
 
 	public interface IFetchFeaturesString
