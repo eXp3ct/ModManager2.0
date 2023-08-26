@@ -1,7 +1,9 @@
 ﻿using Expect.ModManager.CurseApiClient.Deserialization.Interfaces;
 using Expect.ModManager.CurseApiClient.Fetching.Interfaces;
 using Expect.ModManager.Domain.Enums;
+using Expect.ModManager.Domain.Interfaces;
 using Expect.ModManager.Domain.Models;
+using Expect.ModManager.Domain.ViewModels;
 using Newtonsoft.Json;
 using System.Diagnostics.CodeAnalysis;
 

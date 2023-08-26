@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Expect.ModManager.View"
         mc:Ignorable="d"
-        Title="ModManager" Height="800" Width="1280" 
-        FontFamily="{DynamicResource RobotoMedium}" FontSize="16"
+        Title="ModManager" Height="800" Width="1280" FontSize="16"
         Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
@@ -30,19 +29,67 @@
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Center">
             <ToolBar>
-                <Button>
-                    <TextBlock >
+                <Button Width="25" Height="25" Click="PageBack">
+                    <TextBlock TextAlignment="Center" 
+                               VerticalAlignment="Center" >
                     &lt;
                     </TextBlock>
                 </Button>
-                <TextBlock x:Name="CurrentPageText" Margin="10 0 10 0" VerticalAlignment="Center">
+                <TextBlock x:Name="CurrentPageText"  
+                           VerticalAlignment="Center"
+                           >
                     1
                 </TextBlock>
-                <Button>
-                    <TextBlock>
+                <Button Width="25" Height="25" Click="PageForward">
+                    <TextBlock TextAlignment="Center" VerticalAlignment="Center">
                     &gt;
                     </TextBlock>
                 </Button>
+
+                <Separator/>
+                
+                <TextBlock Text="Версия игры"/>
+                <ComboBox MinWidth="100" x:Name="MinecraftGameVersionViewModelComboBox"
+                          Width="Auto"
+                          SelectionChanged="GameVersionChanged"
+/>
+
+                <TextBlock Text="Категория"/>
+                <ComboBox MinWidth="100" x:Name="CategoryViewModelComboBox" 
+                          Width="Auto" 
+                          SelectionChanged="CategoryChanged"
+                          Margin="0 0 10 0"/>
+
+                <TextBlock Text="Загрузчик"/>
+                <ComboBox MinWidth="100" x:Name="ModLoadersComboBox"
+                          Width="Auto"
+                          SelectionChanged="ModLoaderChanged"
+                          Margin="0 0 10 0"/>
+                <TextBlock Text="Сортировка по"/>
+                <ComboBox MinWidth="100"
+                          x:Name="SortFieldsComboBox"
+                          Margin="0 0 10 0"
+                          SelectionChanged="SortFieldChanged"/>
+                <WrapPanel VerticalAlignment="Center"
+                           Margin="0 0 10 0">
+                    <TextBlock Text="По убыванию"
+                               Margin="0 0 5 0"/>
+                    <CheckBox VerticalAlignment="Center"
+                                Checked="CheckBox_Checked"
+                                Unchecked="CheckBox_Unchecked"
+                              />
+                </WrapPanel>
+                <TextBox Text="Поиск..."
+                         x:Name="SearchFilterTextBox"
+                         Width="150"
+                         KeyUp="SearchFilterChanged"
+                         Margin="0 0 10 0"/>
+
+                <TextBlock Text="Размер страницы"/>
+                <ComboBox MinWidth="100"
+                          x:Name="PageSizeComboBox"
+                          Margin="0 0 10 0"
+                          SelectionChanged="PageSizeChanged"/>
             </ToolBar>
         </ToolBarTray>
 

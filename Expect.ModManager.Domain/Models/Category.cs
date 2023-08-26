@@ -2,7 +2,7 @@
 
 namespace Expect.ModManager.Domain.Models
 {
-	public class Category : IModel
+	public class Category : IFeature
 	{
 		public int Id { get; set; }
 		public int GameId { get; set; }

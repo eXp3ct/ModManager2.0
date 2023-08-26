@@ -32,7 +32,7 @@ namespace Expect.ModManager.View
 				ClassId = 6,
 				ModLoaderType = ModLoaderType.Any,
 				Index = 0,
-				PageSize = 50,
+				PageSize = 10,
 				SortOrder = "desc",
 			});
 		}

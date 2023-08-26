@@ -37,5 +37,13 @@ namespace Expect.ModManager.CurseApiClient.Deserialization.Interfaces
 		public Task<IEnumerable<MinecraftGameVersion>> GetMinecraftGameVersions(bool sortDescending = false);
 		public Task<IEnumerable<MinecraftModLoaderIndex>> GetMinecraftModLoaders(string version = null, bool includeAll = true);
 		public Task<IEnumerable<Category>> GetCategories(int gameId, int classId = 0);
+
+		public async Task<IEnumerable<TFeature>> GetFeature<TFeature>(ViewState state) where TFeature : IFeature => typeof(TFeature) switch
+		{
+			Type t when t == typeof(Category) => (IEnumerable<TFeature>)await GetCategories(state.GameId, state.ClassId),
+			Type t when t == typeof(MinecraftGameVersion) => (IEnumerable<TFeature>)await GetMinecraftGameVersions(state.SortOrder != "asc"),
+			Type t when t == typeof(MinecraftModLoaderIndex) => (IEnumerable<TFeature>)await GetMinecraftModLoaders(state.GameVersion, false),
+			_ => new List<TFeature>(),
+		};
 	}
 }

@@ -3,7 +3,7 @@ using Expect.ModManager.Domain.Interfaces;
 
 namespace Expect.ModManager.Domain.Models
 {
-	public class MinecraftGameVersion : IModel
+	public class MinecraftGameVersion : IFeature
 	{
 		public int Id { get; set; }
 		public int GameVersionId { get; set; }
