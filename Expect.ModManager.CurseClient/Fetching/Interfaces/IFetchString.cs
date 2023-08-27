@@ -28,7 +28,7 @@ namespace Expect.ModManager.CurseApiClient.Fetching.Interfaces
 
 	public interface IFetchModFileString : IFetchString
 	{
-		public Task<string> GetDownloadUrl(int modId, int fileId);
+		public Task<string?> GetDownloadUrl(int modId, int fileId);
 		public Task<string> GetModFile(int modId, int fileId);
 		public Task<string> GetModFiles(int modId,
 			string gameVersion = null,

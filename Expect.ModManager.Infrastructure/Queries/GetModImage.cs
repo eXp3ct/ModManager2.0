@@ -2,6 +2,7 @@
 using Expect.ModManager.Net.Common;
 using Expect.ModManager.Net.Common.Clients;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,12 @@ namespace Expect.ModManager.Infrastructure.Queries
 	public class GetModImageQueryHandler : IRequestHandler<GetModImageQuery, Stream>
 	{
 		private HttpClient<CurseClient> _client;
+		private readonly ILogger<GetModImageQueryHandler> _logger;
 
-		public GetModImageQueryHandler(HttpClient<CurseClient> client)
+		public GetModImageQueryHandler(HttpClient<CurseClient> client, ILogger<GetModImageQueryHandler> logger)
 		{
 			_client = client;
+			_logger = logger;
 		}
 
 		public async Task<Stream> Handle(GetModImageQuery request, CancellationToken cancellationToken)
@@ -37,8 +40,11 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 			if (response.IsSuccessStatusCode)
 			{
+				_logger.LogInformation($"Gained thumbnail image for {request.Mod.Name}");
 				return await response.Content.ReadAsStreamAsync(cancellationToken);
 			}
+
+			_logger.LogWarning($"Cannot gain thumbnail image for {request.Mod.Name}");
 
 			return null;
 		}

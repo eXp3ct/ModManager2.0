@@ -81,7 +81,5 @@ namespace Expect.ModManager.View.Pages
 
 			return names;
 		}
-
-
 	}
 }

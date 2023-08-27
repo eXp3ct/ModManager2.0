@@ -44,12 +44,12 @@ namespace Expect.ModManager.View.UserControls
 			{
 				if (mod != null)
 				{
-					modDescription.OnDepenencyRequired(mod);
+					modDescription.OnAdditionalInfoRequired(mod);
 				}
 			}
 		}
 
-		private void OnDepenencyRequired(Mod mod)
+		private void OnAdditionalInfoRequired(Mod mod)
 		{
 			AdditionalInfoRequired?.Invoke(this, new ModEventArgs(mod));
 		}

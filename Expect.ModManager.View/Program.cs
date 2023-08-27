@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using System;
 
 namespace Expect.ModManager.View
@@ -18,6 +19,12 @@ namespace Expect.ModManager.View
 
 		private static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
+				.UseSerilog((host, config) =>
+				{
+					config
+						.WriteTo.File($"logs/logs.log", rollingInterval: RollingInterval.Hour)
+						.MinimumLevel.Debug();
+				})
 				.ConfigureAppConfiguration((context, configBuilder) =>
 				{
 					configBuilder

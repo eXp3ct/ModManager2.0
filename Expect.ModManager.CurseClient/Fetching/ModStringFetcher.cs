@@ -1,10 +1,12 @@
-﻿using Expect.ModManager.CurseApiClient.Extensions;
+﻿using Expect.ModManager.CurseApiClient.Exceptions;
+using Expect.ModManager.CurseApiClient.Extensions;
 using Expect.ModManager.CurseApiClient.Fetching.Interfaces;
 using Expect.ModManager.CurseApiClient.Urls;
 using Expect.ModManager.CurseApiClient.Urls.Enums;
 using Expect.ModManager.Domain.Enums;
 using Expect.ModManager.Net.Common;
 using Expect.ModManager.Net.Common.Clients;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -12,27 +14,48 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 {
 	public class ModStringFetcher : IFetchModString
 	{
-		private readonly HttpClient<CurseClient> _client;
+		private readonly HttpClient<CurseClient> _curse;
 		private readonly IGetEndpoint _endpoint;
+		private readonly ILogger<ModStringFetcher> _logger;
 
-		public ModStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint)
+		public ModStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint, ILogger<ModStringFetcher> logger)
 		{
-			_client = client;
+			_curse = client;
 			_endpoint = endpoint;
+			_logger = logger;
 		}
 
 		public async Task<string> GetMod(int modId)
 		{
-			using var response = await _client.Client.GetAsync(_endpoint.GetEndpoint(RequestType.GetMod, modId));
+			using var response = await _curse.Client.GetAsync(_endpoint.GetEndpoint(RequestType.GetMod, modId));
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if(string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), $"Cannot fetch json for mod {modId}");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod {modId}");
+			return result;
 		}
 
 		public async Task<string> GetModDescription(int modId)
 		{
-			using var response = await _client.Client.GetAsync(_endpoint.GetEndpoint(RequestType.GetModDescription, modId));
+			using var response = await _curse.Client.GetAsync(_endpoint.GetEndpoint(RequestType.GetModDescription, modId));
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if(string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri),$"Cannot fetch json for mod description {modId}");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod description {modId}");
+
+			return result;
 		}
 
 		public async Task<string> GetList(IEnumerable<int> modIds)
@@ -45,9 +68,19 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 				Content = new StringContent(requestBody, Encoding.UTF8, "application/json")
 			};
 
-			using var response = await _client.Client.SendAsync(request);
+			using var response = await _curse.Client.SendAsync(request);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if(string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri),
+					$"Cannot fetch json for mod list {string.Join(" | ", modIds)}" );
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod list {string.Join(" | ", modIds)}");
+			return result;
 		}
 
 		public async Task<string> SearchMods(
@@ -77,9 +110,20 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 
 			var url = $"{_endpoint.GetEndpoint(RequestType.SearchMod)}?{queryString}";
 
-			using var response = await _client.Client.GetAsync(url);
+			using var response = await _curse.Client.GetAsync(url);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if (string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), "Cannot fetch json for search mods");
+
+				return result;
+			}
+
+			_logger.LogInformation("Fetchted json for mod search");
+
+			return result;
 		}
 
 	}

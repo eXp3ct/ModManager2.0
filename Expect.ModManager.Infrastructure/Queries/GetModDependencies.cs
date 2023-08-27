@@ -4,6 +4,7 @@ using Expect.ModManager.Domain.Interfaces;
 using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Domain.ViewModels;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +28,15 @@ namespace Expect.ModManager.Infrastructure.Queries
 		private readonly IModFileDeserializer _fileDeserializer;
 		private readonly IModDeserializer _modDeserilizer;
 		private readonly ViewState _viewState;
+		private readonly ILogger<GetModDependenciesQueryHandler> _logger;
 
-		public GetModDependenciesQueryHandler(IModFileDeserializer fileDeserializer, ViewState viewState, IModDeserializer modDeserilizer)
+		public GetModDependenciesQueryHandler(IModFileDeserializer fileDeserializer, ViewState viewState, 
+			IModDeserializer modDeserilizer, ILogger<GetModDependenciesQueryHandler> logger)
 		{
 			_fileDeserializer = fileDeserializer;
 			_viewState = viewState;
 			_modDeserilizer = modDeserilizer;
+			_logger = logger;
 		}
 
 		public async Task<IEnumerable<IMod>> Handle(GetModDependenciesQuery request, CancellationToken cancellationToken)
@@ -41,6 +45,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 			if(!modFiles.SelectMany(x => x.Dependencies).Any())
 			{
+				_logger.LogWarning($"Gained 0 dependencies for {request.Mod.Name}");
 				return Enumerable.Empty<IMod>();
 			}
 
@@ -55,10 +60,13 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 			if (depIds == null || !depIds.Any())
 			{
+				_logger.LogWarning($"Gained 0 required dependencies for {request.Mod.Name}");
 				return Enumerable.Empty<IMod>();
 			}
 
 			var depMods = await _modDeserilizer.GetModelsList(depIds);
+
+			_logger.LogInformation($"Gained dependencies for {request.Mod.Name}: {string.Join(" | ", depMods.Select(x => x.Name))}");
 
 			return depMods;
 		}

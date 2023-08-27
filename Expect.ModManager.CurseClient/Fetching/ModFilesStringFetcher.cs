@@ -1,17 +1,14 @@
-﻿using Expect.ModManager.CurseApiClient.Extensions;
+﻿using Expect.ModManager.CurseApiClient.Exceptions;
+using Expect.ModManager.CurseApiClient.Extensions;
 using Expect.ModManager.CurseApiClient.Fetching.Interfaces;
 using Expect.ModManager.CurseApiClient.Urls;
 using Expect.ModManager.CurseApiClient.Urls.Enums;
 using Expect.ModManager.Domain.Enums;
 using Expect.ModManager.Net.Common;
 using Expect.ModManager.Net.Common.Clients;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Expect.ModManager.CurseApiClient.Fetching
 {
@@ -19,11 +16,13 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 	{
 		private readonly HttpClient<CurseClient> _client;
 		private readonly IGetEndpoint _endpoint;
+		private readonly ILogger<ModFilesStringFetcher> _logger;
 
-		public ModFilesStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint)
+		public ModFilesStringFetcher(HttpClient<CurseClient> client, IGetEndpoint endpoint, ILogger<ModFilesStringFetcher> logger)
 		{
 			_client = client;
 			_endpoint = endpoint;
+			_logger = logger;
 		}
 
 		public async Task<string> GetList(IEnumerable<int> fileIds)
@@ -38,7 +37,16 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 
 			using var response = await _client.Client.SendAsync(request);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if (string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), $"Cannot fetch json for mod files {string.Join(" | ", fileIds)}");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod files {string.Join(" | ", fileIds)}");
+			return result;
 		}
 
 		public async Task<string> GetModFile(int modId, int fileId)
@@ -47,20 +55,39 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 
 			using var response = await _client.Client.GetAsync(url);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+			if (string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), $"Cannot fetch json for mod {modId} file {fileId}");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod {modId} file {fileId}");
+
+			return result;
 		}
 
-		public async Task<string> GetDownloadUrl(int modId, int fileId)
+		public async Task<string?> GetDownloadUrl(int modId, int fileId)
 		{
 			var url = _endpoint.GetEndpoint(RequestType.GetModFileDownloadUrl, modId, fileId);
 
 			using var response = await _client.Client.GetAsync(url);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if (string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), $"Cannot fetch json for download url mod {modId} file {fileId}");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for download url mod {modId} file {fileId}");
+
+			return result;
 		}
 
-		public async Task<string> GetModFiles(int modId, 
-			string gameVersion = "", 
+		public async Task<string> GetModFiles(int modId,
+			string gameVersion = "",
 			ModLoaderType modLoaderType = ModLoaderType.Any, int index = 0, int pageSize = 0)
 		{
 			var queryParams = new Dictionary<string, string>
@@ -82,7 +109,17 @@ namespace Expect.ModManager.CurseApiClient.Fetching
 
 			using var response = await _client.Client.GetAsync(url);
 
-			return await response.TryReturnString();
+			var result = await response.TryReturnString();
+
+			if (string.IsNullOrEmpty(result))
+			{
+				_logger.LogError(new FetchingException(response.StatusCode, response.RequestMessage?.RequestUri), $"Cannot fetch json for mod {modId} files");
+				return result;
+			}
+
+			_logger.LogInformation($"Fetchted json for mod {modId} files");
+
+			return result;
 		}
 	}
 }
