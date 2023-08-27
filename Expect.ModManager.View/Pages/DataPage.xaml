@@ -16,21 +16,36 @@
         
         <DataGrid x:Name="DataGrid" SelectionMode="Single" CanUserAddRows="False" CanUserDeleteRows="False"
                   CanUserReorderColumns="False" CanUserSortColumns="False" GridLinesVisibility="All" HorizontalContentAlignment="Left" HeadersVisibility="Column"
-                  VerticalContentAlignment="Center" 
-                  IsReadOnly="True" MaxColumnWidth="300"
+                  VerticalContentAlignment="Center" MaxColumnWidth="300"
                   AutoGenerateColumns="False"
                   >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name"
-                                    Binding="{Binding Name}"/>
+                                    Binding="{Binding Name}"
+                                    IsReadOnly="True"/>
                 <DataGridTextColumn Header="Summary"
-                                    Binding="{Binding Summary}"/>
+                                    Binding="{Binding Summary}"
+                                    IsReadOnly="True"/>
                 <DataGridTextColumn Header="Author"
-                                    Binding="{Binding Author}"/>
+                                    Binding="{Binding Author}"
+                                    IsReadOnly="True"/>
                 <DataGridTextColumn Header="Date Created"
-                                    Binding="{Binding DateCreated}"/>
+                                    Binding="{Binding DateCreated}"
+                                    IsReadOnly="True"/>
                 <DataGridTextColumn Header="Date Updated"
-                                    Binding="{Binding DateModified}"/>
+                                    Binding="{Binding DateModified}"
+                                    IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Selection">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Selected}"
+                                      Checked="CheckBox_Checked"
+                                      Unchecked="CheckBox_Unchecked"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">

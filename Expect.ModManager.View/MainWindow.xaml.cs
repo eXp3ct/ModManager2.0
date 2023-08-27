@@ -11,6 +11,8 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -37,15 +39,17 @@ namespace Expect.ModManager.View
 		private readonly IPageFactory<DataPage> _pageFactory;
 		private readonly ViewState _viewState;
 		private readonly IMediator _meditaor;
+		private readonly IList<int> _selectedModIds;
 
 		private int _currentPage = 1;
 
-		public MainWindow(IPageFactory<DataPage> pageFactory, ViewState viewState, IMediator meditaor)
+		public MainWindow(IPageFactory<DataPage> pageFactory, ViewState viewState, IMediator meditaor, IList<int> selectedModIds)
 		{
 			InitializeComponent();
 			_pageFactory = pageFactory;
 			_viewState = viewState;
 			_meditaor = meditaor;
+			_selectedModIds = selectedModIds;
 		}
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -55,6 +59,16 @@ namespace Expect.ModManager.View
 			await AddFeatures(_viewState);
 
 			SortOrderCheckBox.IsChecked = true;
+
+			if(_selectedModIds is ObservableCollection<int> observable)
+			{
+				observable.CollectionChanged += SelectedModsChanged;
+			}
+		}
+
+		private void SelectedModsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			SelectedModsCountText.Text = _selectedModIds.Count.ToString();
 		}
 
 		private async Task AddFeatures(ViewState state)

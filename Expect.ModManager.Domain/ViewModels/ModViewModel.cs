@@ -17,6 +17,7 @@ namespace Expect.ModManager.Domain.ViewModels
 		public DateTime DateCreated { get; set; }
 
 		public DateTime DateModified { get; set; }
+		public bool Selected { get; set; }
 
 		public virtual Mod FullMod { get; set; }
 	}

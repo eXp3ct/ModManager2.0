@@ -10,6 +10,8 @@ using Expect.ModManager.View.Pages.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 
 namespace Expect.ModManager.View
@@ -36,6 +38,8 @@ namespace Expect.ModManager.View
 				PageSize = 10,
 				SortOrder = "desc",
 			});
+
+			services.AddSingleton<IList<int>, ObservableCollection<int>>();
 		}
 
 		private static void AddPageFactory<TPage>(this IServiceCollection services) where TPage : Page, IFillable
