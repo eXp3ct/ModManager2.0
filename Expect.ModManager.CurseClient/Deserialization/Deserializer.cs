@@ -94,7 +94,20 @@ namespace Expect.ModManager.CurseApiClient.Deserialization
 
 		public async Task<string?> GetDownloadUrl(int modId, int fileId)
 		{
-			return await _modFileString.GetDownloadUrl(modId, fileId);
+			var json = await _modFileString.GetDownloadUrl(modId, fileId);
+
+			var data = JsonConvert.DeserializeObject<DownloadUrl>(json);
+
+			if (data == null || data.Data == null)
+			{
+				_logger.LogError($"Cannot deserialze mod {modId} file {fileId} download url");
+
+				return data?.Data;
+			}
+
+			_logger.LogInformation($"Deserialzed mod {modId} file {fileId} download url");
+
+			return data!.Data;
 		}
 		
 		public async Task<ModFile?> GetModFile(int modelId, int fileId)

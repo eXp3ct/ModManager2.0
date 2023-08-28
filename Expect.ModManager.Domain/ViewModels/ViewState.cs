@@ -193,6 +193,8 @@ namespace Expect.ModManager.Domain.ViewModels
 			}
 		}
 
+		public string? FolderPath { get; set; }
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		protected virtual void OnPropertyChanged(string propertyName)

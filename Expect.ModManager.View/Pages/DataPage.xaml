@@ -66,6 +66,7 @@
 
         <usercontrols:ModDescription Grid.Column="1" 
                                      x:Name="ModDescription"
+                                     StartInstallingMods="ModDescription_StartInstallingMods"
                                      AdditionalInfoRequired="ModDescription_DepenencyRequired"
                                      Mod="{Binding ElementName=DataGrid, Path=SelectedItem.FullMod}"/>
 

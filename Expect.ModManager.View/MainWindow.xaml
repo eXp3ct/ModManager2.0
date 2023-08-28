@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Expect.ModManager.View"
         mc:Ignorable="d"
-        Title="ModManager" Height="800" Width="1280" FontSize="16"
-        Loaded="Window_Loaded">
+        Title="ModManager" FontSize="16"
+        Loaded="Window_Loaded" Width="1920" Height="1080"
+        WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,11 +15,10 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-
+        
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Файл">
-                
+                <MenuItem Header="Выбрать папку" Click="ChooseDirectory"/>
             </MenuItem>
         </Menu>
 
@@ -90,17 +90,46 @@
             </ToolBar>
         </ToolBarTray>
 
-        <Frame x:Name="MainFrame" Grid.Row="2" />
+        <Frame x:Name="MainFrame" Grid.Row="2" Grid.ColumnSpan="2"/>
         
-        <!--TODO Mod Description-->
-        
-        <StatusBar Grid.Row="3" Grid.ColumnSpan="2">
-            <TextBlock>
-                Выбранно модов: 
-            </TextBlock>
-            <TextBlock x:Name="SelectedModsCountText">
-                0
-            </TextBlock>
+
+        <StatusBar Grid.Row="3" Grid.ColumnSpan="2"
+                   FlowDirection="LeftToRight"
+                   HorizontalAlignment="Stretch"
+                   >
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0 0 10 0">
+                        Выбранно модов:
+                    </TextBlock>
+                    <TextBlock x:Name="SelectedModsCountText"
+                                TextAlignment="Center"
+                               VerticalAlignment="Center">
+                        0
+                    </TextBlock>
+                </StackPanel>
+            </StatusBarItem>
+
+            <StatusBarItem Grid.Column="2">
+                <ProgressBar x:Name="InstallingProgressBar"
+                         HorizontalAlignment="Stretch"
+                         Width="370"
+                         Height="15" VerticalAlignment="Center"
+                         Minimum="0"
+                             Maximum="100"/>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>

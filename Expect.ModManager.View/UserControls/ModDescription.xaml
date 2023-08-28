@@ -28,14 +28,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!--<TextBlock Grid.ColumnSpan="2" TextAlignment="Center" TextWrapping="Wrap">
-            <Run FontWeight="Bold" Text="{Binding Mod.Name}"/>
-            <LineBreak/>
-            <Image x:Name="ModImage" Width="100" Height="100"/>
-            <Run Text="{Binding Mod.Summary}"/>
-        </TextBlock>-->
+        
         <TextBlock Grid.Row="0" Text="{Binding Mod.Name}" TextAlignment="Center" VerticalAlignment="Center"
                    Grid.ColumnSpan="2" TextWrapping="Wrap"/>
         <Image Grid.Row="1" x:Name="ModImage" Width="100" Height="100"
@@ -119,5 +114,13 @@
             </ItemsControl>
         </StackPanel>
 
+        <Button Grid.Row="15" Grid.ColumnSpan="2" Height="50"
+                 Width="300"
+                VerticalAlignment="Bottom"
+                Margin="0 0 0 25"
+                Click="InstallMods" x:Name="InstallButton">
+            Установить выбранные моды
+        </Button>
+        
     </Grid>
 </UserControl>

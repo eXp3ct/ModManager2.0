@@ -1,6 +1,7 @@
 ﻿using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Infrastructure.Events;
 using Expect.ModManager.Infrastructure.Queries;
+using Expect.ModManager.View.Pages;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -30,14 +31,21 @@ namespace Expect.ModManager.View.UserControls
 			DependencyProperty.Register("Mod", typeof(Mod), typeof(ModDescription), new PropertyMetadata(null, OnModChanged));
 
 		public event EventHandler<ModEventArgs> AdditionalInfoRequired;
-
+		public event EventHandler StartInstallingMods;
 
 		public ModDescription()
 		{
 			InitializeComponent();
 
 			DataContext = this;
+			DataPage.DoneInstalling += DataPage_DoneInstalling;
 		}
+
+		private void DataPage_DoneInstalling(object? sender, EventArgs e)
+		{
+			InstallButton.IsEnabled = true;
+		}
+
 		private static void OnModChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			if (d is ModDescription modDescription && e.NewValue is Mod mod)
@@ -54,7 +62,11 @@ namespace Expect.ModManager.View.UserControls
 			AdditionalInfoRequired?.Invoke(this, new ModEventArgs(mod));
 		}
 
-		
+		private void OnInstallMods()
+		{
+			InstallButton.IsEnabled = false;
+			StartInstallingMods?.Invoke(this, EventArgs.Empty);
+		}
 
 		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
@@ -69,5 +81,10 @@ namespace Expect.ModManager.View.UserControls
 			}
 			e.Handled = true;
 		}
-	}
+
+		private void InstallMods(object sender, RoutedEventArgs e)
+		{
+			OnInstallMods();
+        }
+    }
 }

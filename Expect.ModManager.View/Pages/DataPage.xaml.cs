@@ -4,7 +4,9 @@ using Expect.ModManager.Domain.ViewModels.Interfaces;
 using Expect.ModManager.Infrastructure.Events;
 using Expect.ModManager.Infrastructure.Queries;
 using Expect.ModManager.View.Pages.Interfaces;
+using Expect.ModManager.View.UserControls;
 using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -25,8 +27,10 @@ namespace Expect.ModManager.View.Pages
 	{
 		private readonly IMediator _mediator;
 		private readonly ViewState _viewState;
-
 		private readonly IList<int> _selectedModIds;
+
+		public event EventHandler<ReportEventArgs> Report;
+		public static event EventHandler DoneInstalling;
 
 		public DataPage(IMediator mediator, ViewState viewState, IList<int> selectedModIds)
 		{
@@ -36,6 +40,8 @@ namespace Expect.ModManager.View.Pages
 
 			_viewState.PropertyChanged += OnViewStatePropertyChanged;
 			_selectedModIds = selectedModIds;
+
+			//ModDescription.DataPage = this;
 		}
 
 		private void OnViewStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -117,6 +123,37 @@ namespace Expect.ModManager.View.Pages
 				return;
 
 			_selectedModIds.Remove(mod.Id);
+		}
+
+		private async void ModDescription_StartInstallingMods(object sender, System.EventArgs e)
+		{
+			var query = new InstallModsQuery();
+			query.Report += ProgressReport;
+			var errors = await _mediator.Send(query);
+			if (errors.Any())
+			{
+				MessageBox.Show($"Несколько модов не удалось установить попробуйте установить их вручную:" +
+					$"\n{string.Join('\n', errors
+					.Select(pair => $"• Мод: {pair.Key.Name} | Файл: {pair.Value.DisplayName} | Ссылка: {pair.Key.Links.WebSiteUrl}"))}"
+					, "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+				OnDoneInstalling();
+				return;
+			}
+
+			MessageBox.Show($"{_selectedModIds.Count} модов и их зависимости успешно установлены в\n{_viewState.FolderPath}",
+				"Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+
+			OnDoneInstalling();
+		}
+
+		private void ProgressReport(object? sender, ReportEventArgs e)
+		{
+			Report?.Invoke(sender, e);
+		}
+
+		private void OnDoneInstalling()
+		{
+			DoneInstalling?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

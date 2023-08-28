@@ -9,6 +9,7 @@ using Expect.ModManager.View.Pages;
 using Expect.ModManager.View.Pages.Factories;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -43,7 +45,11 @@ namespace Expect.ModManager.View
 
 		private int _currentPage = 1;
 
-		public MainWindow(IPageFactory<DataPage> pageFactory, ViewState viewState, IMediator meditaor, IList<int> selectedModIds)
+		public MainWindow(
+			IPageFactory<DataPage> pageFactory,
+			ViewState viewState,
+			IMediator meditaor,
+			IList<int> selectedModIds)
 		{
 			InitializeComponent();
 			_pageFactory = pageFactory;
@@ -54,7 +60,10 @@ namespace Expect.ModManager.View
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			MainFrame.Content = _pageFactory.Create();
+			var page = _pageFactory.Create();
+			page.Report += OnProgressReport;
+			DataPage.DoneInstalling += OnDoneInstalling;
+			MainFrame.Content = page;
 
 			await AddFeatures(_viewState);
 
@@ -64,6 +73,17 @@ namespace Expect.ModManager.View
 			{
 				observable.CollectionChanged += SelectedModsChanged;
 			}
+		}
+
+		private void OnDoneInstalling(object? sender, EventArgs e)
+		{
+			InstallingProgressBar.Value = 0;
+			_selectedModIds.Clear();
+		}
+
+		private void OnProgressReport(object? sender, Infrastructure.Events.ReportEventArgs e)
+		{
+			InstallingProgressBar.Value += e.NewValue;
 		}
 
 		private void SelectedModsChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -88,7 +108,7 @@ namespace Expect.ModManager.View
 			var features = await _meditaor.Send(query);
 
 			features.AddPlaceholder();
-			var comboBox = FindName($"{typeof(TFeatureViewModel).Name}ComboBox") as ComboBox;
+			var comboBox = FindName($"{typeof(TFeatureViewModel).Name}ComboBox") as System.Windows.Controls.ComboBox;
 
 			comboBox!.ItemsSource = features;
 			comboBox.DisplayMemberPath = nameof(IFeatureViewModel.Name);
@@ -136,7 +156,7 @@ namespace Expect.ModManager.View
 			_viewState.SortField = (SearchSortFields)(SortFieldsComboBox.SelectedItem);
 		}
 
-		private void SearchFilterChanged(object sender, KeyEventArgs e)
+		private void SearchFilterChanged(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			if (e.Key != Key.Enter)
 				return;
@@ -175,6 +195,16 @@ namespace Expect.ModManager.View
 
 			CurrentPageText.Text = (++_currentPage).ToString();
 			_viewState.Index += _viewState.PageSize;
+		}
+
+		private void ChooseDirectory(object sender, RoutedEventArgs e)
+		{
+			using var dialog = new FolderBrowserDialog();
+
+			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				_viewState.FolderPath = dialog.SelectedPath;
+			}			
 		}
 	}
 }

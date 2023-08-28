@@ -34,7 +34,12 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 		public async Task<Stream> Handle(GetModImageQuery request, CancellationToken cancellationToken)
 		{
-			var url = request.Mod.Logo.ThumbnailUrl;
+			var url = request.Mod.Logo?.ThumbnailUrl;
+
+			if(url == null)
+			{
+				return null;
+			}
 
 			var response = await _client.Client.GetAsync(url, cancellationToken);
 
