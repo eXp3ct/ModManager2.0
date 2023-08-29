@@ -1,7 +1,10 @@
-﻿using Expect.ModManager.CurseApiClient;
+﻿using Expect.ModManager.Caching;
+using Expect.ModManager.CurseApiClient;
 using Expect.ModManager.Domain.Configurations;
 using Expect.ModManager.Domain.Enums;
+using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Domain.ViewModels;
+using Expect.ModManager.Domain.ViewModels.Interfaces;
 using Expect.ModManager.Infrastructure;
 using Expect.ModManager.Net;
 using Expect.ModManager.View.Pages;
@@ -39,7 +42,8 @@ namespace Expect.ModManager.View
 				SortOrder = "desc",
 			});
 
-			services.AddSingleton<IList<int>, ObservableCollection<int>>();
+			services.AddSingleton<IList<Mod>, ObservableCollection<Mod>>();
+			services.AddInMemoryCaching();
 		}
 
 		private static void AddPageFactory<TPage>(this IServiceCollection services) where TPage : Page, IFillable

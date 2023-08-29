@@ -8,6 +8,6 @@ namespace Expect.ModManager.View.Pages.Interfaces
 {
 	public interface IFillable
 	{
-		public void Fill();
+		public Task Fill();
 	}
 }

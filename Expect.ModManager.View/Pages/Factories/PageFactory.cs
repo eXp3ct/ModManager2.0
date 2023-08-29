@@ -17,11 +17,11 @@ namespace Expect.ModManager.View.Pages.Factories
 			_factory = factory;
 		}
 
-		public TPage Create()
+		public async Task<TPage> Create()
 		{
 			var page = _factory();
 
-			page.Fill();
+			await page.Fill();
 
 			return page;
 		}

@@ -44,7 +44,7 @@
                 </Button>
 
                 <Separator/>
-                
+
                 <TextBlock Text="Версия игры"/>
                 <ComboBox MinWidth="100" x:Name="MinecraftGameVersionViewModelComboBox"
                           Width="Auto"
@@ -91,7 +91,7 @@
         </ToolBarTray>
 
         <Frame x:Name="MainFrame" Grid.Row="2" Grid.ColumnSpan="2"/>
-        
+
 
         <StatusBar Grid.Row="3" Grid.ColumnSpan="2"
                    FlowDirection="LeftToRight"
@@ -116,9 +116,13 @@
                     </TextBlock>
                     <TextBlock x:Name="SelectedModsCountText"
                                 TextAlignment="Center"
-                               VerticalAlignment="Center">
+                               VerticalAlignment="Center"
+                               Margin="0 0 10 0">
                         0
                     </TextBlock>
+                    <Button Click="ViewSelectedMods">
+                        Посмотреть
+                    </Button>
                 </StackPanel>
             </StatusBarItem>
 

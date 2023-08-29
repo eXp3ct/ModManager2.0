@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Expect.ModManager.Caching\Expect.ModManager.Caching.csproj" />
     <ProjectReference Include="..\Expect.ModManager.CurseClient\Expect.ModManager.CurseApiClient.csproj" />
     <ProjectReference Include="..\Expect.ModManager.Domain\Expect.ModManager.Domain.csproj" />
     <ProjectReference Include="..\Expect.ModManager.Infrastructure\Expect.ModManager.Infrastructure.csproj" />

@@ -10,6 +10,6 @@ namespace Expect.ModManager.View.Pages.Factories
 {
 	public interface IPageFactory<TPage> where TPage : Page
 	{
-		public TPage Create();
+		public Task<TPage> Create();
 	}
 }

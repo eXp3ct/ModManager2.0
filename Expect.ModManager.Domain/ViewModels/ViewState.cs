@@ -201,5 +201,10 @@ namespace Expect.ModManager.Domain.ViewModels
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
+		public override string ToString()
+		{
+			return $"{GameId}_{ClassId}_{CategoryId}_{GameVersion}_{SearchFilter}_{SortField}_{SortOrder}_{ModLoaderType}_{GameVersionTypeId}_{AuthorId}_{Slug}_{Index}_{PageSize}";
+		}
 	}
 }
