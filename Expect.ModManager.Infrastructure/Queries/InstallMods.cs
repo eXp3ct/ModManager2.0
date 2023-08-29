@@ -31,8 +31,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 		private readonly IDownloader<CurseClient> _downloader;
 		private readonly ILogger<InstallModsQueryHandler> _logger;
 		private readonly IModFileDeserializer _fileDeserializer;
-		private readonly IModDeserializer _modDeserializer;
-		private readonly IList<int> _selectedModsIds;
+		private readonly IList<Mod> _selectedMods;
 		private readonly ViewState _viewState;
 		private readonly IMediator _mediator;
 		
@@ -40,26 +39,24 @@ namespace Expect.ModManager.Infrastructure.Queries
 		public InstallModsQueryHandler(IDownloader<CurseClient> downloader,
 			ILogger<InstallModsQueryHandler> logger,
 			IModFileDeserializer fileDeserializer,
-			IModDeserializer modDeserializer,
-			IList<int> selectedModsIds,
+			IList<Mod> selectedModsIds,
 			ViewState viewState,
 			IMediator mediator)
 		{
 			_downloader = downloader;
 			_logger = logger;
 			_fileDeserializer = fileDeserializer;
-			_modDeserializer = modDeserializer;
-			_selectedModsIds = selectedModsIds;
+			_selectedMods = selectedModsIds;
 			_viewState = viewState;
 			_mediator = mediator;
 		}
 
 		public async Task<IEnumerable<KeyValuePair<Mod, ModFile>>?> Handle(InstallModsQuery request, CancellationToken cancellationToken)
 		{
-			_logger.LogInformation($"Started downloading {_selectedModsIds.Count}");
+			_logger.LogInformation($"Started downloading {_selectedMods.Count}");
 			var errorResult = new List<KeyValuePair<Mod, ModFile>>();
-			
-			var mods = await _modDeserializer.GetModelsList(_selectedModsIds);
+
+			var mods = _selectedMods;
 
 			var fileQueue = new Dictionary<Mod, ModFile>();
 
@@ -68,13 +65,13 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 			foreach(var mod in mods)
 			{
-				var modFiles = await _fileDeserializer.GetModFiles(mod.Id, _viewState, 0, 20);
+				var modFiles = await _fileDeserializer.GetModFiles(mod.Id, _viewState, 0, 50);
 
 				if (modFiles == null || !modFiles.Any())
 					continue;
 
 				var latestFile = modFiles
-					.Where(file => file.ReleaseType == ModFileReleaseType.Release && file.IsAvailable)
+					.Where(file => (file.ReleaseType == ModFileReleaseType.Release || file.ReleaseType == ModFileReleaseType.Beta ) && file.IsAvailable)
 					.OrderByDescending(file => file.FileDate)
 					.FirstOrDefault();
 
@@ -96,7 +93,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 			_logger.LogInformation($"Mods to install: {string.Join(" | ", fileQueue.Keys.Select(x => x.Name).Distinct())}");
 
-			var unique = fileQueue.DistinctBy(pair => pair.Key.Name);
+			var unique = fileQueue.DistinctBy(pair => pair.Key.Id);
 
 			var totalLength = unique
 				.Select(x => x.Value.FileLength)
@@ -118,7 +115,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 				using var fileStream = new FileStream($"{_viewState.FolderPath}/{file.FileName}", FileMode.Create);
 
-				var value = (double)file.FileLength / (double)totalLength ;
+				var value = file.FileLength / (double)totalLength ;
 				value *= 100;
 				request.OnReport(value);
 
@@ -126,7 +123,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 				_logger.LogInformation($"Installed {mod.Name}");
 			}
 
-			_logger.LogInformation($"Done installing {fileQueue.Count} mods");
+			_logger.LogInformation($"Done installing {unique.Count()} mods");
 
 			return errorResult;
 		}

@@ -41,15 +41,16 @@ namespace Expect.ModManager.View
 		private readonly IPageFactory<DataPage> _pageFactory;
 		private readonly ViewState _viewState;
 		private readonly IMediator _meditaor;
-		private readonly IList<int> _selectedModIds;
+		private readonly IList<Mod> _selectedModIds;
 
+		private DataPage _dataPage;
 		private int _currentPage = 1;
 
 		public MainWindow(
 			IPageFactory<DataPage> pageFactory,
 			ViewState viewState,
 			IMediator meditaor,
-			IList<int> selectedModIds)
+			IList<Mod> selectedModIds)
 		{
 			InitializeComponent();
 			_pageFactory = pageFactory;
@@ -60,16 +61,17 @@ namespace Expect.ModManager.View
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			var page = _pageFactory.Create();
-			page.Report += OnProgressReport;
+			_dataPage = await _pageFactory.Create();
+
+			_dataPage.Report += OnProgressReport;
 			DataPage.DoneInstalling += OnDoneInstalling;
-			MainFrame.Content = page;
+			MainFrame.Content = _dataPage;
 
 			await AddFeatures(_viewState);
 
 			SortOrderCheckBox.IsChecked = true;
 
-			if(_selectedModIds is ObservableCollection<int> observable)
+			if(_selectedModIds is ObservableCollection<Mod> observable)
 			{
 				observable.CollectionChanged += SelectedModsChanged;
 			}
@@ -206,5 +208,10 @@ namespace Expect.ModManager.View
 				_viewState.FolderPath = dialog.SelectedPath;
 			}			
 		}
-	}
+
+		private void ViewSelectedMods(object sender, RoutedEventArgs e)
+		{
+			_dataPage.Fill(_selectedModIds);			
+        }
+    }
 }
