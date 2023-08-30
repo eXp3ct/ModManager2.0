@@ -7,6 +7,7 @@ using Expect.ModManager.Domain.ViewModels;
 using Expect.ModManager.Domain.ViewModels.Interfaces;
 using Expect.ModManager.Infrastructure;
 using Expect.ModManager.Net;
+using Expect.ModManager.Updates;
 using Expect.ModManager.View.Pages;
 using Expect.ModManager.View.Pages.Factories;
 using Expect.ModManager.View.Pages.Interfaces;
@@ -24,6 +25,7 @@ namespace Expect.ModManager.View
 		public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
 		{
 			services.Configure<CurseClientOptions>(configuration.GetSection(nameof(CurseClientOptions)));
+			services.Configure<AutoUpdaterOptions>(configuration.GetSection(nameof(AutoUpdaterOptions)));
 
 			services.AddInfrastructure();
 			services.AddCurseClient();
@@ -35,15 +37,15 @@ namespace Expect.ModManager.View
 			{
 				GameId = 432,
 				ClassId = 6,
-				ModLoaderType = ModLoaderType.Forge,
-				GameVersion = "1.12.2",
 				Index = 0,
 				PageSize = 10,
+				SortField = SearchSortFields.TotalDownloads,
 				SortOrder = "desc",
 			});
 
 			services.AddSingleton<IList<Mod>, ObservableCollection<Mod>>();
 			services.AddInMemoryCaching();
+			services.AddAutoUpdates();
 		}
 
 		private static void AddPageFactory<TPage>(this IServiceCollection services) where TPage : Page, IFillable

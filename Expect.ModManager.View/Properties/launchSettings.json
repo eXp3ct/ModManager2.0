@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Expect.ModManager.View": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

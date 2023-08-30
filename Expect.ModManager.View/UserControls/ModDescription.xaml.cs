@@ -32,6 +32,7 @@ namespace Expect.ModManager.View.UserControls
 
 		public event EventHandler<ModEventArgs> AdditionalInfoRequired;
 		public event EventHandler StartInstallingMods;
+		public event EventHandler<ModEventArgs> OnAddToFavorites;
 
 		public ModDescription()
 		{
@@ -86,5 +87,10 @@ namespace Expect.ModManager.View.UserControls
 		{
 			OnInstallMods();
         }
-    }
+
+		private void AddToFavorites(object sender, RoutedEventArgs e)
+		{
+			OnAddToFavorites?.Invoke(this, new ModEventArgs(Mod));
+		}
+	}
 }

@@ -3,14 +3,18 @@ using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Domain.ViewModels;
 using Expect.ModManager.Domain.ViewModels.Interfaces;
 using Expect.ModManager.Infrastructure.Queries;
+using Expect.ModManager.Updates;
 using Expect.ModManager.View.Extensions;
 using Expect.ModManager.View.Pages;
 using Expect.ModManager.View.Pages.Factories;
 using MediatR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,25 +34,30 @@ namespace Expect.ModManager.View
 		private readonly ViewState _viewState;
 		private readonly IMediator _meditaor;
 		private readonly IList<Mod> _selectedModIds;
+		private readonly Updater _updater;
 
 		private DataPage _dataPage;
 		private int _currentPage = 1;
+		private bool _selectedModsView = false;
 
 		public MainWindow(
 			IPageFactory<DataPage> pageFactory,
 			ViewState viewState,
 			IMediator meditaor,
-			IList<Mod> selectedModIds)
+			IList<Mod> selectedModIds,
+			Updater updater)
 		{
 			InitializeComponent();
 			_pageFactory = pageFactory;
 			_viewState = viewState;
 			_meditaor = meditaor;
 			_selectedModIds = selectedModIds;
+			_updater = updater;
 		}
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			Title += $" v{Assembly.GetExecutingAssembly().GetName().Version}";
 			_dataPage = await _pageFactory.Create();
 
 			_dataPage.Report += OnProgressReport;
@@ -63,6 +72,11 @@ namespace Expect.ModManager.View
 			{
 				observable.CollectionChanged += SelectedModsChanged;
 			}
+
+			_updater.CheckForUpdates();
+
+			SortFieldsComboBox.SelectedItem = _viewState.SortField;
+			PageSizeComboBox.SelectedItem = _viewState.PageSize;
 		}
 
 		private void OnDoneInstalling(object? sender, EventArgs e)
@@ -133,6 +147,7 @@ namespace Expect.ModManager.View
 		private void GameVersionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			_viewState.GameVersion = ((MinecraftGameVersionViewModel)MinecraftGameVersionViewModelComboBox.SelectedItem).Name;
+			ModLoadersComboBox.SelectedItem ??= ModLoaderType.Forge;
 		}
 
 		private void ModLoaderChanged(object sender, SelectionChangedEventArgs e)
@@ -197,16 +212,25 @@ namespace Expect.ModManager.View
 			}
 		}
 
-		private void ViewSelectedMods(object sender, RoutedEventArgs e)
+		private async void ViewSelectedMods(object sender, RoutedEventArgs e)
 		{
+			if (_selectedModsView)
+			{
+				await _dataPage.Fill();
+				_selectedModsView = false;
+				ViewSelectedModsButton.Content = "Посмотреть";
+				return;
+			}
+			ViewSelectedModsButton.Content = "Назад";
 			_dataPage.Fill(_selectedModIds);
+			_selectedModsView = true;
 		}
 
 		private async void ExportSelectedMods(object sender, RoutedEventArgs e)
 		{
 			using var dialog = new FolderBrowserDialog();
 
-			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
 				var path = dialog.SelectedPath;
 
@@ -222,10 +246,10 @@ namespace Expect.ModManager.View
 		{
 			using var dialog = new OpenFileDialog()
 			{
-				Filter = "*|*.json",
+				Filter = "*.json",
 			};
 
-			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
 				var filePath = dialog.FileName;
 
@@ -238,6 +262,29 @@ namespace Expect.ModManager.View
 
 				_dataPage.Fill(importedMods);
 			}
+		}
+
+		private void CheckForUpdatesManually(object sender, RoutedEventArgs e)
+		{
+			_updater.CheckForUpdates();
+		}
+
+		private async void ViewFavoritesMods(object sender, RoutedEventArgs e)
+		{
+			var filePath = "settings/favorites.json";
+
+			if (!File.Exists(filePath))
+				return;
+
+			var json = await File.ReadAllTextAsync(filePath);
+			var mods = JsonConvert.DeserializeObject<IEnumerable<Mod>>(json);
+
+			_dataPage.Fill(mods);
+		}
+
+		private async void ViewSearchMods(object sender, RoutedEventArgs e)
+		{
+			await _dataPage.Fill();
 		}
 	}
 }

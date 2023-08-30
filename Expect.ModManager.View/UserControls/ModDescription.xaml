@@ -28,9 +28,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <TextBlock Grid.Row="0" Text="{Binding Mod.Name}" TextAlignment="Center" VerticalAlignment="Center"
                    Grid.ColumnSpan="2" TextWrapping="Wrap"/>
         <Image Grid.Row="1" x:Name="ModImage" Width="100" Height="100"
@@ -114,7 +115,10 @@
             </ItemsControl>
         </StackPanel>
 
-        <Button Grid.Row="15" Grid.ColumnSpan="2" Height="50"
+        <Button Grid.Row="15" Grid.ColumnSpan="2" Content="Добавить мод в избранное"
+                Width="300" Click="AddToFavorites" Margin="0 25 0 0" x:Name="AddToFavoritesButton"/>
+
+        <Button Grid.Row="16" Grid.ColumnSpan="2" Height="50"
                  Width="300"
                 VerticalAlignment="Bottom"
                 Margin="0 0 0 25"

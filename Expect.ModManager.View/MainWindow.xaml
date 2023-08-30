@@ -23,7 +23,9 @@
             <MenuItem Header="Сборка">
                 <MenuItem Header="Экспорт" Click="ExportSelectedMods"/>
                 <MenuItem Header="Импорт" Click="ImportSelectedMods"/>
+                <MenuItem Header="Избранное" Click="ViewFavoritesMods"/>
             </MenuItem>
+            <MenuItem Header="Обновление" Click="CheckForUpdatesManually"/>
         </Menu>
 
         <ToolBarTray Grid.Row="1" Grid.ColumnSpan="2" 
@@ -60,7 +62,7 @@
                           Width="Auto" 
                           SelectionChanged="CategoryChanged"
                           Margin="0 0 10 0"/>
-
+                
                 <TextBlock Text="Загрузчик"/>
                 <ComboBox MinWidth="100" x:Name="ModLoadersComboBox"
                           Width="Auto"
@@ -91,6 +93,8 @@
                           x:Name="PageSizeComboBox"
                           Margin="0 0 10 0"
                           SelectionChanged="PageSizeChanged"/>
+                <Button Content="Назад" Width="100" Click="ViewSearchMods"/>
+
             </ToolBar>
         </ToolBarTray>
 
@@ -124,7 +128,7 @@
                                Margin="0 0 10 0">
                         0
                     </TextBlock>
-                    <Button Click="ViewSelectedMods">
+                    <Button Click="ViewSelectedMods" x:Name="ViewSelectedModsButton">
                         Посмотреть
                     </Button>
                 </StackPanel>

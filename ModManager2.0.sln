@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Expect.ModManager.CurseApiC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Expect.ModManager.Net", "Expect.ModManager.Net\Expect.ModManager.Net.csproj", "{6D0C2013-84B0-4831-8010-1BEAE0BA7424}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expect.ModManager.Caching", "Expect.ModManager.Caching\Expect.ModManager.Caching.csproj", "{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Expect.ModManager.Caching", "Expect.ModManager.Caching\Expect.ModManager.Caching.csproj", "{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expect.ModManager.Updates", "Expect.ModManager.Updates\Expect.ModManager.Updates.csproj", "{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

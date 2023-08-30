@@ -9,12 +9,16 @@ using Expect.ModManager.Infrastructure.Queries;
 using Expect.ModManager.View.Pages.Interfaces;
 using Expect.ModManager.View.UserControls;
 using MediatR;
+using Microsoft.Win32.SafeHandles;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -91,10 +95,12 @@ namespace Expect.ModManager.View.Pages
 			MessageBox.Show("Something Changed");
 		}
 
-		private async void ModDescription_DepenencyRequired(object sender, ModEventArgs e)
+		private async void LoadAdditionalInfo(object sender, ModEventArgs e)
 		{
 			ModDescription.DependencyList.ItemsSource = await GetDependenicesNames(e.Mod);
 			ModDescription.ModImage.Source = await GetModImage(e.Mod);
+
+
 		}
 
 		private async Task<ImageSource> GetModImage(Mod mod)
@@ -184,6 +190,30 @@ namespace Expect.ModManager.View.Pages
 		private void OnDoneInstalling()
 		{
 			DoneInstalling?.Invoke(this, EventArgs.Empty);
+		}
+
+		private async void ModDescription_OnAddToFavourite(object sender, ModEventArgs e)
+		{
+			var filePath = "settings/favorites.json";
+
+			Directory.CreateDirectory("settings");
+
+			List<Mod>? modList;
+			if (File.Exists(filePath))
+			{
+				var json = await File.ReadAllTextAsync(filePath);
+				modList = JsonConvert.DeserializeObject<List<Mod>>(json);
+			}
+			else
+			{
+				modList = new List<Mod>();
+			}
+
+			modList.Add(e.Mod);
+
+			var modsJson = JsonConvert.SerializeObject(modList, Formatting.Indented);
+
+			await File.WriteAllTextAsync(filePath, modsJson);
 		}
 	}
 }

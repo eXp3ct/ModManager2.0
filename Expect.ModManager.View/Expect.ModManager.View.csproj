@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
+    <AssemblyVersion>2.0.1.2</AssemblyVersion>
+    <Title>Minecraft Mod Manager</Title>
+    <Product>ModManager</Product>
+    <AssemblyName>ModManager</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +26,7 @@
     <ProjectReference Include="..\Expect.ModManager.CurseClient\Expect.ModManager.CurseApiClient.csproj" />
     <ProjectReference Include="..\Expect.ModManager.Domain\Expect.ModManager.Domain.csproj" />
     <ProjectReference Include="..\Expect.ModManager.Infrastructure\Expect.ModManager.Infrastructure.csproj" />
+    <ProjectReference Include="..\Expect.ModManager.Updates\Expect.ModManager.Updates.csproj" />
   </ItemGroup>
 
   <ItemGroup>
