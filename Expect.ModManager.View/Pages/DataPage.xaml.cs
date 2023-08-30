@@ -76,7 +76,10 @@ namespace Expect.ModManager.View.Pages
 
 			foreach(var mod in list)
 			{
-				mod.Selected = true;
+				if(_selectedModIds.Select(x => x.Id).Contains(mod.Id))
+				{
+					mod.Selected = true;
+				}
 				result.Add(mod);
 			}
 
@@ -154,7 +157,7 @@ namespace Expect.ModManager.View.Pages
 			}
 
 			var query = new InstallModsQuery();
-			query.Report += ProgressReport;
+			query.OnReport += ProgressReport;
 			var errors = await _mediator.Send(query);
 			if (errors.Any())
 			{

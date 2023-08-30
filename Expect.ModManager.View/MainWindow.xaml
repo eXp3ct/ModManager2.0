@@ -20,6 +20,10 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Выбрать папку" Click="ChooseDirectory"/>
             </MenuItem>
+            <MenuItem Header="Сборка">
+                <MenuItem Header="Экспорт" Click="ExportSelectedMods"/>
+                <MenuItem Header="Импорт" Click="ImportSelectedMods"/>
+            </MenuItem>
         </Menu>
 
         <ToolBarTray Grid.Row="1" Grid.ColumnSpan="2" 

@@ -1,5 +1,4 @@
 ﻿using Expect.ModManager.Domain.Enums;
-using Expect.ModManager.Domain.Interfaces;
 using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Domain.ViewModels;
 using Expect.ModManager.Domain.ViewModels.Interfaces;
@@ -8,26 +7,15 @@ using Expect.ModManager.View.Extensions;
 using Expect.ModManager.View.Pages;
 using Expect.ModManager.View.Pages.Factories;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Expect.ModManager.View
 {
@@ -71,7 +59,7 @@ namespace Expect.ModManager.View
 
 			SortOrderCheckBox.IsChecked = true;
 
-			if(_selectedModIds is ObservableCollection<Mod> observable)
+			if (_selectedModIds is ObservableCollection<Mod> observable)
 			{
 				observable.CollectionChanged += SelectedModsChanged;
 			}
@@ -203,15 +191,53 @@ namespace Expect.ModManager.View
 		{
 			using var dialog = new FolderBrowserDialog();
 
-			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
 			{
 				_viewState.FolderPath = dialog.SelectedPath;
-			}			
+			}
 		}
 
 		private void ViewSelectedMods(object sender, RoutedEventArgs e)
 		{
-			_dataPage.Fill(_selectedModIds);			
-        }
-    }
+			_dataPage.Fill(_selectedModIds);
+		}
+
+		private async void ExportSelectedMods(object sender, RoutedEventArgs e)
+		{
+			using var dialog = new FolderBrowserDialog();
+
+			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				var path = dialog.SelectedPath;
+
+				var query = new ExportSelectedModsQuery(path);
+
+				var savedPath = await _meditaor.Send(query);
+
+				System.Windows.MessageBox.Show($"Выделенные моды сохранены в\n{savedPath}", "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+		}
+
+		private async void ImportSelectedMods(object sender, RoutedEventArgs e)
+		{
+			using var dialog = new OpenFileDialog()
+			{
+				Filter = "*|*.json",
+			};
+
+			if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				var filePath = dialog.FileName;
+
+				var query = new ImportSelectedModsQuery(filePath);
+
+				var importedMods = await _meditaor.Send(query);
+
+				if (importedMods == null)
+					return;
+
+				_dataPage.Fill(importedMods);
+			}
+		}
+	}
 }

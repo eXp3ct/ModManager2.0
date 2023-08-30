@@ -1,6 +1,5 @@
 ﻿using Expect.ModManager.CurseApiClient.Deserialization.Interfaces;
 using Expect.ModManager.Domain.Enums;
-using Expect.ModManager.Domain.Interfaces;
 using Expect.ModManager.Domain.Models;
 using Expect.ModManager.Domain.ViewModels;
 using Expect.ModManager.Infrastructure.Events;
@@ -8,21 +7,16 @@ using Expect.ModManager.Net.Common.Clients;
 using Expect.ModManager.Net.Downloading;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Expect.ModManager.Infrastructure.Queries
 {
 	public class InstallModsQuery : IRequest<IEnumerable<KeyValuePair<Mod, ModFile>>?>
 	{
-		public event EventHandler<ReportEventArgs> Report;
+		public event EventHandler<ReportEventArgs> OnReport;
 
-		public void OnReport(double value)
+		public void Report(double value)
 		{
-			Report?.Invoke(this, new ReportEventArgs(value));
+			OnReport?.Invoke(this, new ReportEventArgs(value));
 		}
 	}
 
@@ -34,7 +28,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 		private readonly IList<Mod> _selectedMods;
 		private readonly ViewState _viewState;
 		private readonly IMediator _mediator;
-		
+
 
 		public InstallModsQueryHandler(IDownloader<CurseClient> downloader,
 			ILogger<InstallModsQueryHandler> logger,
@@ -63,7 +57,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 			if (mods == null)
 				return null;
 
-			foreach(var mod in mods)
+			foreach (var mod in mods)
 			{
 				var modFiles = await _fileDeserializer.GetModFiles(mod.Id, _viewState, 0, 50);
 
@@ -71,7 +65,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 					continue;
 
 				var latestFile = modFiles
-					.Where(file => (file.ReleaseType == ModFileReleaseType.Release || file.ReleaseType == ModFileReleaseType.Beta ) && file.IsAvailable)
+					.Where(file => (file.ReleaseType == ModFileReleaseType.Release || file.ReleaseType == ModFileReleaseType.Beta) && file.IsAvailable)
 					.OrderByDescending(file => file.FileDate)
 					.FirstOrDefault();
 
@@ -83,7 +77,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 						continue;
 					fileQueue.Add(depMod.Key, depMod.Value);
 				}
-					
+
 
 				var pair = new KeyValuePair<Mod, ModFile>(mod, latestFile);
 				if (fileQueue.ContainsKey(pair.Key))
@@ -104,7 +98,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 				_logger.LogInformation($"Started installing {mod.Name}");
 				var downloadUrl = await _fileDeserializer.GetDownloadUrl(mod.Id, file.Id);
 
-				if(downloadUrl == null)
+				if (downloadUrl == null)
 				{
 					errorResult.Add(new KeyValuePair<Mod, ModFile>(mod, file));
 					_logger.LogError($"Cannot install {mod.Name}, download url was null");
@@ -115,9 +109,9 @@ namespace Expect.ModManager.Infrastructure.Queries
 
 				using var fileStream = new FileStream($"{_viewState.FolderPath}/{file.FileName}", FileMode.Create);
 
-				var value = file.FileLength / (double)totalLength ;
+				var value = file.FileLength / (double)totalLength;
 				value *= 100;
-				request.OnReport(value);
+				request.Report(value);
 
 				fileStream.Write(fileBytes, 0, fileBytes.Length);
 				_logger.LogInformation($"Installed {mod.Name}");
@@ -133,8 +127,8 @@ namespace Expect.ModManager.Infrastructure.Queries
 			var query = new GetModDependenciesQuery(mod);
 
 			var depMods = await _mediator.Send(query);
-			
-			if(!depMods.Any())
+
+			if (!depMods.Any())
 				return Enumerable.Empty<Mod>();
 
 			return (IEnumerable<Mod>)depMods;
@@ -143,9 +137,9 @@ namespace Expect.ModManager.Infrastructure.Queries
 		private async Task<IEnumerable<KeyValuePair<Mod, ModFile>>> GetDependencyModModFilePairs(Mod mod)
 		{
 			var depMods = await GetDependencyMod(mod);
-			var set = new HashSet<KeyValuePair<Mod,ModFile>>();
+			var set = new HashSet<KeyValuePair<Mod, ModFile>>();
 
-			foreach(var depMod in depMods)
+			foreach (var depMod in depMods)
 			{
 				var modFiles = await _fileDeserializer.GetModFiles(depMod.Id, _viewState, 0, 20);
 
@@ -156,16 +150,16 @@ namespace Expect.ModManager.Infrastructure.Queries
 					.OrderByDescending(file => file.FileDate)
 					.FirstOrDefault();
 
-				if(latestModFile.Dependencies.Any(x => x.RelationType == ModFileReleationType.RequiredDependency))
+				if (latestModFile.Dependencies.Any(x => x.RelationType == ModFileReleationType.RequiredDependency))
 				{
-					foreach(var innerDep in await GetDependencyModModFilePairs(depMod))
+					foreach (var innerDep in await GetDependencyModModFilePairs(depMod))
 					{
 						set.Add(innerDep);
 					}
 				}
 
 				set.Add(new KeyValuePair<Mod, ModFile>(depMod, latestModFile));
-				
+
 			}
 
 			return set.Distinct();
