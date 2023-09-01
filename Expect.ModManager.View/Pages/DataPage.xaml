@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Expect.ModManager.View.Pages" xmlns:usercontrols="clr-namespace:Expect.ModManager.View.UserControls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="DataPage">
+      Title="DataPage" Loaded="Page_Loaded">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -70,6 +70,8 @@
                                      StartInstallingMods="ModDescription_StartInstallingMods"
                                      AdditionalInfoRequired="LoadAdditionalInfo"
                                      Mod="{Binding ElementName=DataGrid, Path=SelectedItem.FullMod}"/>
+
+        <!--<Frame Grid.Column="2" x:Name="DescriptionFrame"/>-->
 
     </Grid>
 </Page>

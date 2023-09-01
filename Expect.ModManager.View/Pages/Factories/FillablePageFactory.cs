@@ -8,20 +8,22 @@ using System.Windows.Controls;
 
 namespace Expect.ModManager.View.Pages.Factories
 {
-	public class PageFactory<TPage> : IPageFactory<TPage> where TPage : Page
+	public class FillablePageFactory<TPage> : IFIllablePageFactory<TPage> where TPage : Page, IFillable
 	{
 		private readonly Func<TPage> _factory;
 
-		public PageFactory(Func<TPage> factory)
+		public FillablePageFactory(Func<TPage> factory)
 		{
 			_factory = factory;
 		}
 
-		public Task<TPage> Create()
+		public async Task<TPage> Create()
 		{
 			var page = _factory();
 
-			return Task.Factory.StartNew(() => page);
+			await page.Fill();
+
+			return page;
 		}
 	}
 }

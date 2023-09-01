@@ -30,22 +30,24 @@ namespace Expect.ModManager.View
 	{
 		private const int PaginationLimit = 10000;
 
-		private readonly IPageFactory<DataPage> _pageFactory;
+		private readonly IFIllablePageFactory<DataPage> _pageFactory;
 		private readonly ViewState _viewState;
 		private readonly IMediator _meditaor;
 		private readonly IList<Mod> _selectedModIds;
 		private readonly Updater _updater;
+		private readonly ObservableCollection<Mod> _favoritesMods;
 
 		private DataPage _dataPage;
 		private int _currentPage = 1;
 		private bool _selectedModsView = false;
 
 		public MainWindow(
-			IPageFactory<DataPage> pageFactory,
+			IFIllablePageFactory<DataPage> pageFactory,
 			ViewState viewState,
 			IMediator meditaor,
 			IList<Mod> selectedModIds,
-			Updater updater)
+			Updater updater,
+			ObservableCollection<Mod> favoritesMods)
 		{
 			InitializeComponent();
 			_pageFactory = pageFactory;
@@ -53,6 +55,7 @@ namespace Expect.ModManager.View
 			_meditaor = meditaor;
 			_selectedModIds = selectedModIds;
 			_updater = updater;
+			_favoritesMods = favoritesMods;
 		}
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -269,17 +272,9 @@ namespace Expect.ModManager.View
 			_updater.CheckForUpdates();
 		}
 
-		private async void ViewFavoritesMods(object sender, RoutedEventArgs e)
+		private void ViewFavoritesMods(object sender, RoutedEventArgs e)
 		{
-			var filePath = "settings/favorites.json";
-
-			if (!File.Exists(filePath))
-				return;
-
-			var json = await File.ReadAllTextAsync(filePath);
-			var mods = JsonConvert.DeserializeObject<IEnumerable<Mod>>(json);
-
-			_dataPage.Fill(mods);
+			_dataPage.Fill(_favoritesMods);
 		}
 
 		private async void ViewSearchMods(object sender, RoutedEventArgs e)
