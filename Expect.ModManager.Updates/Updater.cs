@@ -15,17 +15,17 @@ namespace Expect.ModManager.Updates
 		{
 			_options = options;			
 
-			AutoUpdater.InstallationPath = Assembly.GetExecutingAssembly().Location;
-			AutoUpdater.LetUserSelectRemindLater = false;
-			AutoUpdater.ClearAppDirectory = true;
+			
 		}
 
 		public void CheckForUpdates()
 		{
 			if (EnsureAuth())
 			{
+				AutoUpdater.InstallationPath = Assembly.GetExecutingAssembly().Location;
+				AutoUpdater.LetUserSelectRemindLater = false;
+				AutoUpdater.ClearAppDirectory = true;
 				AutoUpdater.Start(_options.Value.UpdateFileUrl);
-				
 			}
 		}
 

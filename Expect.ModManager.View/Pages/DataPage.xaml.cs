@@ -6,9 +6,11 @@ using Expect.ModManager.Domain.ViewModels;
 using Expect.ModManager.Domain.ViewModels.Interfaces;
 using Expect.ModManager.Infrastructure.Events;
 using Expect.ModManager.Infrastructure.Queries;
+using Expect.ModManager.View.Pages.Factories;
 using Expect.ModManager.View.Pages.Interfaces;
 using Expect.ModManager.View.UserControls;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using System;
@@ -34,23 +36,33 @@ namespace Expect.ModManager.View.Pages
 	{
 		private readonly IMediator _mediator;
 		private readonly ViewState _viewState;
-		private readonly IList<Mod> _selectedModIds;
+		private readonly IList<Mod> _selectedMods;
 		private readonly IModProvider _modProvider;
 		private readonly IMapper _mapper;
+		private readonly ObservableCollection<Mod> _favoritesMods;
+		private readonly IConfiguration _configuration;
 
  		public event EventHandler<ReportEventArgs> Report;
 		public static event EventHandler DoneInstalling;
 
-		public DataPage(IMediator mediator, ViewState viewState, IList<Mod> selectedModIds, IModProvider modProvider, IMapper mapper)
+
+		public DataPage(
+			IMediator mediator,
+			ViewState viewState,
+			IList<Mod> selectedModIds,
+			IModProvider modProvider,
+			IMapper mapper,
+			ObservableCollection<Mod> favoritesMods,
+			IConfiguration configuration)
 		{
 			InitializeComponent();
 			_mediator = mediator;
 			_viewState = viewState;
-
-			_viewState.PropertyChanged += OnViewStatePropertyChanged;
-			_selectedModIds = selectedModIds;
+			_selectedMods = selectedModIds;
 			_modProvider = modProvider;
 			_mapper = mapper;
+			_favoritesMods = favoritesMods;
+			_configuration = configuration;
 		}
 
 		private async void OnViewStatePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -80,7 +92,7 @@ namespace Expect.ModManager.View.Pages
 
 			foreach(var mod in list)
 			{
-				if(_selectedModIds.Select(x => x.Id).Contains(mod.Id))
+				if(_selectedMods.Select(x => x.Id).Contains(mod.Id))
 				{
 					mod.Selected = true;
 				}
@@ -100,7 +112,14 @@ namespace Expect.ModManager.View.Pages
 			ModDescription.DependencyList.ItemsSource = await GetDependenicesNames(e.Mod);
 			ModDescription.ModImage.Source = await GetModImage(e.Mod);
 
-
+			if(_favoritesMods.Select(x => x.Id).Contains(e.Mod.Id))
+			{
+				ModDescription.AddToFavoritesButton.Content = "Удалить мод из избранного";
+			}
+			else
+			{
+				ModDescription.AddToFavoritesButton.Content = "Добавить мод в избранное";
+			}
 		}
 
 		private async Task<ImageSource> GetModImage(Mod mod)
@@ -140,17 +159,17 @@ namespace Expect.ModManager.View.Pages
 			if (mod == null)
 				return;
 
-			_selectedModIds.Add(mod.FullMod);
+			_selectedMods.Add(mod.FullMod);
 		}
 
 		private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
 		{
 			var mod = (ModViewModel)DataGrid.SelectedItem;
 
-			if (mod == null || !_selectedModIds.Contains(mod.FullMod))
+			if (mod == null || !_selectedMods.Contains(mod.FullMod))
 				return;
 
-			_selectedModIds.Remove(mod.FullMod);
+			_selectedMods.Remove(mod.FullMod);
 		}
 
 		private async void ModDescription_StartInstallingMods(object sender, System.EventArgs e)
@@ -167,7 +186,7 @@ namespace Expect.ModManager.View.Pages
 			var errors = await _mediator.Send(query);
 			if (errors.Any())
 			{
-				MessageBox.Show($"{_selectedModIds.Count} модов и их зависимости успешно установлены в\n{_viewState.FolderPath}," +
+				MessageBox.Show($"{_selectedMods.Count} модов и их зависимости успешно установлены в\n{_viewState.FolderPath}," +
 					$"но несколько модов не удалось установить попробуйте установить их вручную:" +
 					$"\n{string.Join('\n', errors
 					.Select(pair => $"• Мод: {pair.Key.Name} | Файл: {pair.Value.DisplayName} | Ссылка: {pair.Key.Links.WebSiteUrl}"))}"
@@ -176,7 +195,7 @@ namespace Expect.ModManager.View.Pages
 				return;
 			}
 
-			MessageBox.Show($"{_selectedModIds.Count} модов и их зависимости успешно установлены в\n{_viewState.FolderPath}",
+			MessageBox.Show($"{_selectedMods.Count} модов и их зависимости успешно установлены в\n{_viewState.FolderPath}",
 				"Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
 
 			OnDoneInstalling();
@@ -194,26 +213,56 @@ namespace Expect.ModManager.View.Pages
 
 		private async void ModDescription_OnAddToFavourite(object sender, ModEventArgs e)
 		{
-			var filePath = "settings/favorites.json";
-
-			Directory.CreateDirectory("settings");
-
-			List<Mod>? modList;
-			if (File.Exists(filePath))
+			if(ModDescription.AddToFavoritesButton.Content.ToString() == "Добавить мод в избранное")
 			{
+				_favoritesMods.Add(e.Mod);
+
+				var filePath = _configuration["UserSettingsLocation"];
+
 				var json = await File.ReadAllTextAsync(filePath);
-				modList = JsonConvert.DeserializeObject<List<Mod>>(json);
+				var modList = JsonConvert.DeserializeObject<List<Mod>>(json);
+
+				modList ??= new List<Mod>();
+
+				modList.Add(e.Mod);
+
+				var modsJson = JsonConvert.SerializeObject(modList, Formatting.Indented);
+
+				await File.WriteAllTextAsync(filePath, modsJson);
 			}
-			else
+			else if(ModDescription.AddToFavoritesButton.Content.ToString() == "Удалить мод из избранного")
 			{
-				modList = new List<Mod>();
+				var filePath = _configuration["UserSettingsLocation"];
+
+				foreach (var mod in _favoritesMods)
+					if (mod.Id == e.Mod.Id)
+					{
+						_favoritesMods.Remove(mod);
+						break;
+					}
+
+				var newModsJson = JsonConvert.SerializeObject(_favoritesMods, Formatting.Indented);
+
+				await File.WriteAllTextAsync(filePath, newModsJson);
+			}			
+		}
+
+		private void Page_Loaded(object sender, RoutedEventArgs e)
+		{
+			_viewState.PropertyChanged += OnViewStatePropertyChanged;
+			_favoritesMods.CollectionChanged += FavoritesModsChanged;
+		}
+
+		private void FavoritesModsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+			{
+				ModDescription.AddToFavoritesButton.Content = "Удалить мод из избранного";
 			}
-
-			modList.Add(e.Mod);
-
-			var modsJson = JsonConvert.SerializeObject(modList, Formatting.Indented);
-
-			await File.WriteAllTextAsync(filePath, modsJson);
+			else if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+			{
+				ModDescription.AddToFavoritesButton.Content = "Добавить мод в избранное";
+			}			
 		}
 	}
 }
