@@ -20,7 +20,7 @@ namespace Expect.ModManager.Caching
 			services.AddSingleton(new MemoryCacheEntryOptions()
 			{
 				SlidingExpiration = TimeSpan.FromHours(1),
-				AbsoluteExpiration = new DateTimeOffset(DateTime.Now, TimeSpan.FromHours(3))
+				AbsoluteExpiration = new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(3))
 			});
 
 			services.AddSingleton<IModProvider, ModProvider>();
