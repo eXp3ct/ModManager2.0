@@ -10,6 +10,7 @@
     <Title>Minecraft Mod Manager</Title>
     <Product>ModManager</Product>
     <AssemblyName>ModManager</AssemblyName>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
