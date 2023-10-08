@@ -17,7 +17,7 @@ namespace Expect.ModManager.View
 			app?.Run();
 		}
 
-		private static IHostBuilder CreateHostBuilder(string[] args) =>
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
 				.UseSerilog((host, config) =>
 				{
