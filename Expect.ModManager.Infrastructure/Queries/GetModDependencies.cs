@@ -64,7 +64,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 				return Enumerable.Empty<IMod>();
 			}
 
-			var depMods = await _modDeserilizer.GetModelsList(depIds);
+			var depMods = await _modDeserilizer.GetList(depIds);
 
 			_logger.LogInformation($"Gained dependencies for {request.Mod.Name}: {string.Join(" | ", depMods.Select(x => x.Name))}");
 

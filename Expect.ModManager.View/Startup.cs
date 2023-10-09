@@ -50,7 +50,6 @@ namespace Expect.ModManager.View
 				Directory.CreateDirectory("settings");
 				if (!File.Exists("settings/favorites.json")){
 					using var _ = File.Create("settings/favorites.json");
-					//_.Dispose();
 				}
 				var collection = new ObservableCollection<Mod>();
 				var json = File.ReadAllText(configuration["UserSettingsLocation"]);

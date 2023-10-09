@@ -249,7 +249,7 @@ namespace Expect.ModManager.View
 		{
 			using var dialog = new OpenFileDialog()
 			{
-				Filter = "*.json",
+				Filter = "*|*.json",
 			};
 
 			if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)

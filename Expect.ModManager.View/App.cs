@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Expect.ModManager.View
@@ -30,8 +26,6 @@ namespace Expect.ModManager.View
 		{
 			MessageBox.Show(e.ExceptionObject.ToString(), "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
 			_logger.LogCritical((Exception)e.ExceptionObject, "Unhandled eception occured");
-
-			Environment.Exit(0);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
