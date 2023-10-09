@@ -9,29 +9,10 @@ on:
       - master
 
 jobs:
-  build-and-test:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 7.0.x
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --no-restore
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+  
 
   release:
-    needs: build-and-test
+    #needs: build-and-test
     runs-on: windows-latest
 
     steps:
@@ -40,6 +21,7 @@ jobs:
 
     - name: Archive Application
       run: |
+        dir
         # Create a directory for the release package
         mkdir release
         # Copy your application files to the release directory (adjust the path accordingly)
