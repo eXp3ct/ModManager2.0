@@ -1,9 +1,7 @@
-import os
-import sys
-import win32api
 import xml.etree.ElementTree as ET
 import requests
 import json
+import subprocess
 
 # Replace the following values with your data
 workspace = "mmmodmanager"
@@ -62,24 +60,22 @@ def upload_to_bitbucket():
         print(f"Error uploading release.zip: {response.status_code}")
         print(response.text)
 
+
 def get_file_version(file_path):
     try:
-        # Получить информацию о файле
-        info = win32api.GetFileVersionInfo(file_path, os.sep)
-        
-        # Извлечь версию из информации о файле
-        version = (
-            info['FileVersionMS'] >> 16,
-            info['FileVersionMS'] & 0xFFFF,
-            info['FileVersionLS'] >> 16,
-            info['FileVersionLS'] & 0xFFFF
-        )
-        
-        return '.'.join(map(str, version))
-    except Exception as e:
-        print(f"Error occured while reading file's version: {e}")
-        return None
+        # Используем команду powershell для получения версии файла
+        command = f"(Get-Item '{file_path}').VersionInfo.FileVersion"
+        result = subprocess.check_output(["powershell", command], universal_newlines=True).strip()
 
+        if result:
+            return result
+        else:
+            print(f"Не удалось получить версию файла: {file_path}")
+            return None
+    except Exception as e:
+        print(f"Ошибка при получении версии файла: {e}")
+        return None
+    
 def update_updates_xml(updates_xml_path, new_version):
     try:
         # Загрузить XML-файл
