@@ -14,6 +14,7 @@ namespace Expect.ModManager.View
 			var host = CreateHostBuilder(args).Build();
 
 			var app = host.Services.GetRequiredService<App>();
+
 			app?.Run();
 		}
 
@@ -38,3 +39,25 @@ namespace Expect.ModManager.View
 				});
 	}
 }
+/*
+ build-and-test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+ */
