@@ -23,8 +23,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0430A171-5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Expect.ModManager.Test", "Expect.ModManager.Test\Expect.ModManager.Test.csproj", "{14D25D87-33C1-4BAA-8026-8341A56CA672}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expect.ModManager.Utils", "Expect.ModManager.Utils\Expect.ModManager.Utils.csproj", "{60FA4BC7-7BD6-46D1-975A-C2125A33866E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,8 +61,6 @@ Global
 		{14D25D87-33C1-4BAA-8026-8341A56CA672}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14D25D87-33C1-4BAA-8026-8341A56CA672}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14D25D87-33C1-4BAA-8026-8341A56CA672}.Release|Any CPU.Build.0 = Release|Any CPU
-		{60FA4BC7-7BD6-46D1-975A-C2125A33866E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{60FA4BC7-7BD6-46D1-975A-C2125A33866E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60FA4BC7-7BD6-46D1-975A-C2125A33866E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60FA4BC7-7BD6-46D1-975A-C2125A33866E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
@@ -80,7 +76,6 @@ Global
 		{0C01F1EF-E0EC-49FE-B763-5D995F07AA8C} = {A173106F-4E7A-4EDF-B0D6-6B4722B347A4}
 		{4AEFA22E-8F92-4D08-B7FD-A03FE29832DD} = {A173106F-4E7A-4EDF-B0D6-6B4722B347A4}
 		{14D25D87-33C1-4BAA-8026-8341A56CA672} = {0430A171-5FD8-453C-BE50-3F70D649184F}
-		{60FA4BC7-7BD6-46D1-975A-C2125A33866E} = {A173106F-4E7A-4EDF-B0D6-6B4722B347A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF8EB68E-C921-474C-AAEC-668B26F406AA}

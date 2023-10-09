@@ -93,7 +93,7 @@ def update_updates_xml(updates_xml_path, new_version):
     except Exception as e:
         print(f"Error occured while changing verion in file {updates_xml_path}: {e}")
 
-path = "Expect.ModManager.View/bin/Debug/net7.0-windows/ModManager.exe"
+path = "release/ModManager.exe"
 version = get_file_version(path)
 
 xmlPath = "updates.xml"
