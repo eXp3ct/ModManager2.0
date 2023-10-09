@@ -39,7 +39,7 @@ namespace Expect.ModManager.CurseApiClient.Deserialization
 			return data!.Data;
 		}
 
-		public async Task<IEnumerable<Mod?>?> GetModelsList(IEnumerable<int> modelIds)
+		public async Task<IEnumerable<Mod?>?> GetList(IEnumerable<int> modelIds)
 		{
 			var json = await _modString.GetList(modelIds);
 
@@ -128,7 +128,7 @@ namespace Expect.ModManager.CurseApiClient.Deserialization
 			return data!.Data;
 		}
 
-		public async Task<IEnumerable<ModFile?>?> GetModelsList(IEnumerable<int> modelIds)
+		public async Task<IEnumerable<ModFile?>?> GetList(IEnumerable<int> modelIds)
 		{
 			var json = await _modFileString.GetList(modelIds);
 

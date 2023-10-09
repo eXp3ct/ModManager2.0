@@ -7,7 +7,7 @@ namespace Expect.ModManager.CurseApiClient.Deserialization.Interfaces
 {
 	public interface IBaseDeserializer<TModel> where TModel : IModel
 	{
-		public Task<IEnumerable<TModel?>?> GetModelsList(IEnumerable<int> modelIds);
+		public Task<IEnumerable<TModel?>?> GetList(IEnumerable<int> modelIds);
 		
 	}
 	
