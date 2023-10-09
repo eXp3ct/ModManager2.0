@@ -38,5 +38,7 @@ jobs:
       run: pip install -r py-dependencies.txt
     - name: Upload to BitBucket
       run: |
+        cd release
         dir
+        cd ..
         py upload.py
