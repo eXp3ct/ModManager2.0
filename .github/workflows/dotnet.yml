@@ -43,7 +43,7 @@ jobs:
         # Create a directory for the release package
         mkdir release
         # Copy your application files to the release directory (adjust the path accordingly)
-        cp -r YourAppDirectory release
+        cp -r Expect.ModManager.Test\bin\Debug\net7.0-windows release
         # Compress the application into a zip file
         7z a -tzip release.zip ./release/*
 
