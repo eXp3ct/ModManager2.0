@@ -269,7 +269,6 @@ namespace Expect.ModManager.View
 
 		private void CheckForUpdatesManually(object sender, RoutedEventArgs e)
 		{
-			throw new Exception("new");
 			_updater.CheckForUpdates();
 		}
 
