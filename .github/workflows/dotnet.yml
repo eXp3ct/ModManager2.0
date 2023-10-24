@@ -52,8 +52,8 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11.4' 
+        python-version: '3.11.2' 
     - name: Install dependencies
-      run: pip install -r py-dependencies.txt
+      run: pip3 install -r py-dependencies.txt
     - name: Upload to BitBucket
       run: py upload.py
