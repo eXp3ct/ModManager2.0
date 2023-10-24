@@ -49,11 +49,8 @@ jobs:
         cd ..
         # Compress the application into a zip file
         7z a -tzip release.zip ./release/*
-    - name: Install Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11.2' 
+
     - name: Install dependencies
       run: pip3 install -r py-dependencies.txt
     - name: Upload to BitBucket
-      run: py upload.py
+      run: python3 upload.py
