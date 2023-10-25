@@ -7,6 +7,8 @@ using Expect.ModManager.Net.Common.Clients;
 using Expect.ModManager.Net.Downloading;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace Expect.ModManager.Infrastructure.Queries
 {
@@ -45,84 +47,94 @@ namespace Expect.ModManager.Infrastructure.Queries
 			_mediator = mediator;
 		}
 
-		public async Task<IEnumerable<KeyValuePair<Mod, ModFile>>?> Handle(InstallModsQuery request, CancellationToken cancellationToken)
-		{
-			_logger.LogInformation($"Started downloading {_selectedMods.Count}");
-			var errorResult = new List<KeyValuePair<Mod, ModFile>>();
+        public async Task<IEnumerable<KeyValuePair<Mod, ModFile>>?> Handle(InstallModsQuery request, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"Started downloading {_selectedMods.Count}");
+            var timer = new Stopwatch();
+            timer.Start();
+            var errorResult = new List<KeyValuePair<Mod, ModFile>>();
+            var fileQueue = new ConcurrentDictionary<Mod, ModFile>();
+            var mods = _selectedMods;
 
-			var mods = _selectedMods;
+            if (mods == null)
+                return null;
 
-			var fileQueue = new Dictionary<Mod, ModFile>();
+            // Создаем список задач для параллельной обработки модов
+            var downloadTasks = mods.AsParallel().Select(async mod =>
+            {
+                var modFiles = await _fileDeserializer.GetModFiles(mod.Id, _viewState, 0, 50);
 
-			if (mods == null)
-				return null;
+                if (modFiles == null || !modFiles.Any())
+                    return;
 
-			foreach (var mod in mods)
-			{
-				var modFiles = await _fileDeserializer.GetModFiles(mod.Id, _viewState, 0, 50);
+                var latestFile = modFiles
+                    .Where(file => (file.ReleaseType == ModFileReleaseType.Release || file.ReleaseType == ModFileReleaseType.Beta) && file.IsAvailable)
+                    .OrderByDescending(file => file.FileDate)
+                    .FirstOrDefault();
 
-				if (modFiles == null || !modFiles.Any())
-					continue;
+                if (latestFile == null)
+                    return;
 
-				var latestFile = modFiles
-					.Where(file => (file.ReleaseType == ModFileReleaseType.Release || file.ReleaseType == ModFileReleaseType.Beta) && file.IsAvailable)
-					.OrderByDescending(file => file.FileDate)
-					.FirstOrDefault();
+                var depModsPairs = await GetDependencyModModFilePairs(mod);
 
-				var depModsPairs = await GetDependencyModModFilePairs(mod);
+                foreach (var depMod in depModsPairs)
+                {
+                    if (fileQueue.ContainsKey(depMod.Key))
+                        continue;
+                    fileQueue.TryAdd(depMod.Key, depMod.Value);
+                }
 
-				foreach (var depMod in depModsPairs)
-				{
-					if (fileQueue.ContainsKey(depMod.Key))
-						continue;
-					fileQueue.Add(depMod.Key, depMod.Value);
-				}
+                var pair = new KeyValuePair<Mod, ModFile>(mod, latestFile);
+                if (fileQueue.ContainsKey(pair.Key))
+                    return;
 
+                fileQueue.TryAdd(pair.Key, pair.Value);
+            });
 
-				var pair = new KeyValuePair<Mod, ModFile>(mod, latestFile);
-				if (fileQueue.ContainsKey(pair.Key))
-					continue;
-				fileQueue.Add(pair.Key, pair.Value);
-			}
+            await Task.WhenAll(downloadTasks);
 
-			_logger.LogInformation($"Mods to install: {string.Join(" | ", fileQueue.Keys.Select(x => x.Name).Distinct())}");
+            _logger.LogInformation($"Mods to install: {string.Join(" | ", fileQueue.Keys.Select(x => x.Name).Distinct())}");
 
-			var unique = fileQueue.DistinctBy(pair => pair.Key.Id);
+            var unique = fileQueue.DistinctBy(pair => pair.Key.Id);
 
-			var totalLength = unique
-				.Select(x => x.Value.FileLength)
-				.Sum();
+            var totalLength = unique
+                .Select(x => x.Value.FileLength)
+                .Sum();
 
-			foreach (var (mod, file) in unique)
-			{
-				_logger.LogInformation($"Started installing {mod.Name}");
-				var downloadUrl = await _fileDeserializer.GetDownloadUrl(mod.Id, file.Id);
+            // Создаем список задач для параллельной установки модов
+            var installTasks = unique.Select(async (modFilePair) =>
+            {
+                _logger.LogInformation($"Started installing {modFilePair.Key.Name}");
+                var downloadUrl = await _fileDeserializer.GetDownloadUrl(modFilePair.Key.Id, modFilePair.Value.Id);
 
-				if (downloadUrl == null)
-				{
-					errorResult.Add(new KeyValuePair<Mod, ModFile>(mod, file));
-					_logger.LogError($"Cannot install {mod.Name}, download url was null");
-					continue;
-				}
+                if (downloadUrl == null)
+                {
+                    errorResult.Add(modFilePair);
+                    _logger.LogError($"Cannot install {modFilePair.Key.Name}, download URL was null");
+                    return;
+                }
 
-				var fileBytes = await _downloader.Download(downloadUrl);
+                var fileBytes = await _downloader.Download(downloadUrl);
 
-				using var fileStream = new FileStream($"{_viewState.FolderPath}/{file.FileName}", FileMode.Create);
+                using var fileStream = new FileStream($"{_viewState.FolderPath}/{modFilePair.Value.FileName}", FileMode.Create);
 
-				var value = file.FileLength / (double)totalLength;
-				value *= 100;
-				request.Report(value);
+                var value = modFilePair.Value.FileLength / (double)totalLength;
+                value *= 100;
+                request.Report(value);
 
-				fileStream.Write(fileBytes, 0, fileBytes.Length);
-				_logger.LogInformation($"Installed {mod.Name}");
-			}
+                fileStream.Write(fileBytes, 0, fileBytes.Length);
+                _logger.LogInformation($"Installed {modFilePair.Key.Name}");
+            });
 
-			_logger.LogInformation($"Done installing {unique.Count()} mods");
+            await Task.WhenAll(installTasks);
 
-			return errorResult;
-		}
+            _logger.LogInformation($"Done installing {unique.Count()} mods");
+            timer.Stop();
+            _logger.LogDebug("Time for downloading {count} mods is: {time}", unique.Count(), timer.Elapsed);
+            return errorResult;
+        }
 
-		private async Task<IEnumerable<Mod>> GetDependencyMod(Mod mod)
+        private async Task<IEnumerable<Mod>> GetDependencyMod(Mod mod)
 		{
 			var query = new GetModDependenciesQuery(mod);
 
