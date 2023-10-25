@@ -138,7 +138,7 @@ namespace Expect.ModManager.Infrastructure.Queries
 		{
 			var depMods = await GetDependencyMod(mod);
 			var set = new HashSet<KeyValuePair<Mod, ModFile>>();
-
+			
 			foreach (var depMod in depMods)
 			{
 				var modFiles = await _fileDeserializer.GetModFiles(depMod.Id, _viewState, 0, 20);

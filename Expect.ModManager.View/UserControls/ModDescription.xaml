@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Expect.ModManager.View.UserControls"
+             xmlns:conv="clr-namespace:Expect.ModManager.View.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              FontSize="16">
+    <UserControl.Resources>
+        <conv:DateTimeConverter x:Key="converter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -31,7 +35,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        
+        <Grid.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="0 5 0 5" />
+            </Style>
+        </Grid.Resources>
+        
         <TextBlock Grid.Row="0" Text="{Binding Mod.Name}" TextAlignment="Center" VerticalAlignment="Center"
                    Grid.ColumnSpan="2" TextWrapping="Wrap"/>
         <Image Grid.Row="1" x:Name="ModImage" Width="100" Height="100"
@@ -41,74 +51,74 @@
         
         <TextBlock Grid.Row="3" Grid.ColumnSpan="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch"
                    TextAlignment="Center">
-            <Hyperlink NavigateUri="{Binding Mod.Links.WebSiteUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="{Binding Mod.Links.WebSiteUrl}" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                 <TextBlock Text="WebSite"/>
             </Hyperlink>
         </TextBlock>
 
         <TextBlock Grid.Row="4" Grid.ColumnSpan="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch"
                    TextAlignment="Center">
-            <Hyperlink NavigateUri="{Binding Mod.Links.WikiUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="{Binding Mod.Links.WikiUrl}" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                 <TextBlock Text="Wiki"/>
             </Hyperlink>
         </TextBlock>
 
         <TextBlock Grid.Row="5" Grid.ColumnSpan="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch"
                    TextAlignment="Center">
-            <Hyperlink NavigateUri="{Binding Mod.Links.IssuesUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="{Binding Mod.Links.IssuesUrl}" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                 <TextBlock Text="Issues"/>
             </Hyperlink>
         </TextBlock>
 
         <TextBlock Grid.Row="6" Grid.ColumnSpan="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch"
                    TextAlignment="Center">
-            <Hyperlink NavigateUri="{Binding Mod.Links.SourceUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+            <Hyperlink NavigateUri="{Binding Mod.Links.SourceUrl}" RequestNavigate="Hyperlink_RequestNavigate" TextDecorations="None">
                 <TextBlock Text="Source"/>
             </Hyperlink>
         </TextBlock>
 
-        <TextBlock Grid.Row="7" Text="Categories: " VerticalAlignment="Center" TextAlignment="Center"/>
-        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1">
+        <TextBlock Grid.Row="7" Text="Categories: " VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="7" Grid.Column="1" >
             <ItemsControl ItemsSource="{Binding Mod.Categories}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <TextBlock Text="•" Margin="0,0,5,0" />
-                            <TextBlock Text="{Binding Name}" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding Name}" TextAlignment="Left"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
 
-        <TextBlock Grid.Row="8" Text="Date Created" TextAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Mod.DateCreated}" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="8" Text="Date Created" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
+        <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Mod.DateCreated, Converter={StaticResource converter}}" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="9" Text="Date Modified" TextAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding Mod.DateModified}" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="9" Text="Date Modified" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
+        <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding Mod.DateModified, Converter={StaticResource converter}}" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="10" Text="Date Released" TextAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding Mod.DateReleased}" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="10" Text="Date Released" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
+        <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding Mod.DateReleased, Converter={StaticResource converter}}" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="11" Text="Download Count" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="11" Text="Download Count" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
         <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Mod.DownloadCount}" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="12" Text="Mod Status" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="12" Text="Mod Status" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
         <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding Mod.Status}" TextAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="13" Text="Available" TextAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="13" Text="Available" VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
         <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding Mod.IsAvailable}" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="False"/>
 
         <!--DEPENDENCIES-->
 
-        <TextBlock Grid.Row="14" Text="Dependencies: " VerticalAlignment="Center" TextAlignment="Center"/>
-        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="14" Grid.Column="1">
+        <TextBlock Grid.Row="14" Text="Dependencies: " VerticalAlignment="Center" TextAlignment="Left" Padding="5 0 0 0"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="14" Grid.Column="1">
             <ItemsControl x:Name="DependencyList">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <TextBlock Text="•" Margin="0,0,5,0" />
-                            <TextBlock Text="{Binding}" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding}" TextAlignment="Left"/>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

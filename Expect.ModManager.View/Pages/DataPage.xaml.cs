@@ -80,6 +80,7 @@ namespace Expect.ModManager.View.Pages
 				collection.Add(mod);
 			}
 			collection.CollectionChanged += Collection_CollectionChanged;
+			//DataGrid.Items.Clear();
 			DataGrid.ItemsSource = collection;
 		}
 

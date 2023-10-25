@@ -14,9 +14,9 @@ namespace Expect.ModManager.Domain.ViewModels
 		public string Summary { get; set; }
 		public string Author { get; set; }
 
-		public DateTime DateCreated { get; set; }
+		public string DateCreated { get; set; }
 
-		public DateTime DateModified { get; set; }
+		public string DateModified { get; set; }
 		public bool Selected { get; set; }
 
 		public virtual Mod FullMod { get; set; }
