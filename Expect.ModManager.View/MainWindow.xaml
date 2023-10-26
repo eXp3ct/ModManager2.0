@@ -4,11 +4,219 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Expect.ModManager.View"
+        xmlns:conv="clr-namespace:Expect.ModManager.View.Converters"
         mc:Ignorable="d"
         Title="ModManager" FontSize="16"
         Loaded="Window_Loaded" Width="1920" Height="1080"
         WindowState="Maximized">
+    <Window.Resources>
+        <conv:PercentageConverter x:Key="PercentageConverter"/>
+        <!--#region Flat combobox -->
+        <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="#e3e9ef" />
+        <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="#fff" />
+        <SolidColorBrush x:Key="ComboBoxDisabledForegroundBrush" Color="#888" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBackgroundBrush" Color="#eee" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBorderBrush" Color="#888" />
 
+        <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2" Name="Border"
+              BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" 
+              CornerRadius="0" BorderThickness="1, 1, 1, 1" 
+              Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+                <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder"
+              CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0" 
+              Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+
+                <Path Name="Arrow" Grid.Column="1" 
+            Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
+            HorizontalAlignment="Center" Fill="#444"
+            VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#FF8D979E"/>
+                </Trigger>
+                <Trigger Property="UIElement.IsEnabled" Value="False">
+                    <Setter Property="Panel.Background" TargetName="Border" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Border.BorderBrush" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBorderBrush}"/>
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#999"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="ComboBoxFlatStyle"  TargetType="{x:Type ComboBox}">
+            <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="TextElement.Foreground" Value="Black"/>
+            <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Name="ToggleButton" Grid.Column="2"
+                ClickMode="Press" Focusable="False"
+                IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+
+                            <ContentPresenter Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"                              
+                              Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                              ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                            <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3"                     
+                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                     Visibility="Hidden" Background="Transparent"
+                     HorizontalAlignment="Left" VerticalAlignment="Center"
+                     Focusable="True" >
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="TextBox" >
+                                        <Border Name="PART_ContentHost" Focusable="False" />
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <!-- Popup showing items -->
+                            <Popup Name="Popup" Placement="Bottom"
+                   Focusable="False" AllowsTransparency="True"
+                   IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
+                   PopupAnimation="Slide">
+                                <Grid Name="DropDown" SnapsToDevicePixels="True"
+                    MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
+                    MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
+                                    <Border Name="DropDownBorder" Background="White" Margin="0, 1, 0, 0"
+                        CornerRadius="0" BorderThickness="1,1,1,1" 
+                        BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"/>
+                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ItemsControl.HasItems" Value="False">
+                                <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="UIElement.IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.IsGrouping" Value="True">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                            </Trigger>
+                            <Trigger Property="ComboBox.IsEditable" Value="True">
+                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
+                                <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                                <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+        
+        <!--#region TextBox placeholder -->
+        <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" />
+                            <TextBlock x:Name="PlaceholderTextBlock"
+                               Text="{TemplateBinding Tag}"
+                               Foreground="Gray"
+                               IsHitTestVisible="False"
+                               Margin="4,0,0,0"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed" />
+                            <ScrollViewer x:Name="PART_ContentHost" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PlaceholderTextBlock" Property="Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+
+        <!--#region Simple button -->
+        <Style x:Key="SimpleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Padding" Value="5,2" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="DarkGray" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+
+        <!--#region Simple progress bar -->
+        <Style x:Key="AnimatedProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Foreground" Value="#ff66ccff" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                            <Border Background="{TemplateBinding Background}">
+                                <Grid>
+                                    <Rectangle x:Name="PART_Track" Width="{TemplateBinding ActualWidth}" Height="{TemplateBinding ActualHeight}" Fill="{TemplateBinding Background}" />
+                                    <Rectangle x:Name="PART_Indicator" Height="{TemplateBinding ActualHeight}" Fill="{TemplateBinding Foreground}" />
+                                    <TextBlock Text="{Binding Path=Value, RelativeSource={RelativeSource TemplatedParent}, StringFormat={}{0:N2}%}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" />
+                                </Grid>
+                            </Border>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}" Value="False">
+                                <Setter TargetName="PART_Indicator" Property="Width" Value="{Binding Value, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource PercentageConverter}}" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,7 +224,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Файл">
                 <MenuItem Header="Выбрать папку" Click="ChooseDirectory"/>
@@ -33,6 +241,14 @@
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Center">
             <ToolBar>
+                
+                <ToolBar.Resources>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="5 0 5 0"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </ToolBar.Resources>
+                
                 <Button Width="25" Height="25" Click="PageBack">
                     <TextBlock TextAlignment="Center" 
                                VerticalAlignment="Center" >
@@ -56,44 +272,46 @@
                 <ComboBox MinWidth="100" x:Name="MinecraftGameVersionViewModelComboBox"
                           Width="Auto"
                           SelectionChanged="GameVersionChanged"
-/>
+                          Style="{StaticResource ComboBoxFlatStyle}">
+                </ComboBox>
 
                 <TextBlock Text="Категория"/>
                 <ComboBox MinWidth="100" x:Name="CategoryViewModelComboBox" 
                           Width="Auto" 
                           SelectionChanged="CategoryChanged"
-                          Margin="0 0 10 0"/>
-                
+                          Style="{StaticResource ComboBoxFlatStyle}"/>
+
                 <TextBlock Text="Загрузчик"/>
                 <ComboBox MinWidth="100" x:Name="ModLoadersComboBox"
                           Width="Auto"
                           SelectionChanged="ModLoaderChanged"
-                          Margin="0 0 10 0"/>
+                          Style="{StaticResource ComboBoxFlatStyle}"/>
+
                 <TextBlock Text="Сортировка по"/>
                 <ComboBox MinWidth="100"
                           x:Name="SortFieldsComboBox"
-                          Margin="0 0 10 0"
-                          SelectionChanged="SortFieldChanged"/>
-                <WrapPanel VerticalAlignment="Center"
-                           Margin="0 0 10 0">
-                    <TextBlock Text="По убыванию"
-                               Margin="0 0 5 0"/>
+                          SelectionChanged="SortFieldChanged"
+                          Style="{StaticResource ComboBoxFlatStyle}"/>
+
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="По убыванию"/>
                     <CheckBox VerticalAlignment="Center"
                                 Checked="CheckBox_Checked"
                                 Unchecked="CheckBox_Unchecked"
                               x:Name="SortOrderCheckBox"/>
                 </WrapPanel>
-                <TextBox Text="Поиск..."
+                <TextBox
                          x:Name="SearchFilterTextBox"
                          Width="150"
                          KeyUp="SearchFilterChanged"
-                         Margin="0 0 10 0"/>
+                         Tag="Поиск..."
+                         Style="{StaticResource PlaceholderTextBoxStyle}" />
 
                 <TextBlock Text="Размер страницы"/>
                 <ComboBox MinWidth="100"
                           x:Name="PageSizeComboBox"
-                          Margin="0 0 10 0"
-                          SelectionChanged="PageSizeChanged"/>
+                          SelectionChanged="PageSizeChanged"
+                          Style="{StaticResource ComboBoxFlatStyle}"/>
                 <Button Content="Назад" Width="100" Click="ViewSearchMods"/>
 
             </ToolBar>
@@ -129,7 +347,7 @@
                                Margin="0 0 10 0">
                         0
                     </TextBlock>
-                    <Button Click="ViewSelectedMods" x:Name="ViewSelectedModsButton">
+                    <Button Click="ViewSelectedMods" x:Name="ViewSelectedModsButton" Style="{StaticResource SimpleButtonStyle}">
                         Посмотреть
                     </Button>
                 </StackPanel>
@@ -141,7 +359,8 @@
                          Width="370"
                          Height="15" VerticalAlignment="Center"
                          Minimum="0"
-                             Maximum="100"/>
+                         Maximum="100"
+                             Style="{StaticResource AnimatedProgressBarStyle}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

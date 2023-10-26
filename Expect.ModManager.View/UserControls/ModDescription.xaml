@@ -10,6 +10,37 @@
              FontSize="16">
     <UserControl.Resources>
         <conv:DateTimeConverter x:Key="converter"/>
+
+        <Style x:Key="SimpleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Padding" Value="5,2" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="DarkGray" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="LightGray" />
+                                <Setter Property="Foreground" Value="Gray" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -126,12 +157,13 @@
         </StackPanel>
 
         <Button Grid.Row="15" Grid.ColumnSpan="2" Content="Добавить мод в избранное"
-                Width="300" Click="AddToFavorites" Margin="0 25 0 0" x:Name="AddToFavoritesButton"/>
+                Width="200" Height="50" Click="AddToFavorites" Margin="0 25 0 0" x:Name="AddToFavoritesButton" Style="{StaticResource SimpleButtonStyle}"/>
 
         <Button Grid.Row="16" Grid.ColumnSpan="2" Height="50"
                  Width="300"
                 VerticalAlignment="Bottom"
                 Margin="0 0 0 25"
+                Style="{StaticResource SimpleButtonStyle}"
                 Click="InstallMods" x:Name="InstallButton">
             Установить выбранные моды
         </Button>

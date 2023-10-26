@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace Expect.ModManager.View
 {
@@ -80,7 +81,9 @@ namespace Expect.ModManager.View
 
 			SortFieldsComboBox.SelectedItem = _viewState.SortField;
 			PageSizeComboBox.SelectedItem = _viewState.PageSize;
-		}
+
+			
+        }
 
 		private void OnDoneInstalling(object? sender, EventArgs e)
 		{
